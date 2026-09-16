@@ -2,6 +2,10 @@
 
 Draw terribly. Guess brilliantly.
 
+## Put it online for free
+
+The `cloudflare` folder contains the no-card deployment edition. It preserves Classic and Study modes, uploaded PDFs, multiplayer rooms, drawing, guessing, timers, close-spelling hints, avatars, and the current interface. Cloudflare Durable Objects keep each live room together without a continuously billed Python server. See `cloudflare/README.md` for the short deployment steps.
+
 ## Open the game
 Double-click **start_game.bat**, then open **http://localhost:8001**. Keep the server window open while playing. This copy uses port 8001 so the original project on 8000 can stay running.
 

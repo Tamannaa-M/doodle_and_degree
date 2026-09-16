@@ -1,0 +1,8 @@
+.runtime/
+__pycache__/
+*.pyc
+uploads/
+node_modules/
+cloudflare/.config/
+.dev.vars
+.wrangler/
