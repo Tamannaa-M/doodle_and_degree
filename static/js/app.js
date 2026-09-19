@@ -50,6 +50,7 @@ class DoodleAndDegreeApp {
     this.btnCreateRoom = document.getElementById('btnCreateRoom');
     this.btnJoinRoom = document.getElementById('btnJoinRoom');
     this.btnStartGame = document.getElementById('btnStartGame');
+    this.btnAddBot = document.getElementById('btnAddBot');
     this.btnCopyInvite = document.getElementById('btnCopyInvite');
 
     // Host Settings
@@ -256,6 +257,15 @@ class DoodleAndDegreeApp {
       this.playSound('pop');
       this.ws.send(JSON.stringify({ type: 'start_game' }));
     });
+
+    if (this.btnAddBot) {
+      this.btnAddBot.addEventListener('click', () => {
+        if (!this.isHost || !this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+        this.playSound('pop');
+        const hasBot = this.players.some(p => p.id === 'bot_ai');
+        this.ws.send(JSON.stringify({ type: hasBot ? 'remove_bot' : 'add_bot' }));
+      });
+    }
 
     // Drawer Canvas Tools
     document.querySelectorAll('.color-swatch').forEach(swatch => {
@@ -856,6 +866,12 @@ class DoodleAndDegreeApp {
       this.hostSettingsBox.style.display = this.isHost ? 'block' : 'none';
       this.btnStartGame.style.display = this.isHost ? 'block' : 'none';
       this.btnStartGame.disabled = !this.isHost || this.uploading;
+      if (this.btnAddBot) {
+        const hasBot = players.some(p => p.id === 'bot_ai');
+        this.btnAddBot.textContent = hasBot ? '✕ Remove Bot' : '🤖 Add AI Bot';
+        this.btnAddBot.style.display = this.isHost ? 'block' : 'none';
+        this.btnAddBot.disabled = !this.isHost;
+      }
       this.refreshMode();
     }
     const container = document.getElementById('lobbyPlayerList');

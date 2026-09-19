@@ -71,6 +71,41 @@ function randomCode() {
   return [...bytes].map(x => chars[x % chars.length]).join("");
 }
 
+function getBotDoodleStrokes(step) {
+  const strokes = [];
+  if (step === 0) {
+    const points = [];
+    const cx = 400, cy = 300, r = 120;
+    for (let i = 0; i <= 36; i++) {
+      const angle = (i * 10 * Math.PI) / 180;
+      points.push({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
+    }
+    strokes.push({ color: "#1E1E24", width: 5, points });
+  } else if (step === 1) {
+    strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 350, y: 260 }, { x: 355, y: 265 }, { x: 360, y: 260 }] });
+    strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 440, y: 260 }, { x: 445, y: 265 }, { x: 450, y: 260 }] });
+  } else if (step === 2) {
+    const mouth = [];
+    for (let i = 0; i <= 20; i++) {
+      const angle = Math.PI * 0.2 + (i * Math.PI * 0.6) / 20;
+      mouth.push({ x: 400 + 50 * Math.cos(angle), y: 300 + 40 * Math.sin(angle) });
+    }
+    strokes.push({ color: "#FF5964", width: 5, points: mouth });
+    strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 310, y: 210 }, { x: 300, y: 130 }, { x: 360, y: 190 }] });
+    strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 490, y: 210 }, { x: 500, y: 130 }, { x: 440, y: 190 }] });
+  } else if (step === 3) {
+    strokes.push({ color: "#FFE600", width: 6, points: [{ x: 395, y: 290 }, { x: 405, y: 290 }, { x: 400, y: 298 }, { x: 395, y: 290 }] });
+    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 340, y: 295 }, { x: 260, y: 285 }] });
+    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 340, y: 305 }, { x: 260, y: 315 }] });
+    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 460, y: 295 }, { x: 540, y: 285 }] });
+    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 460, y: 305 }, { x: 540, y: 315 }] });
+  } else if (step === 4) {
+    strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 180, y: 140 }, { x: 220, y: 140 }, { x: 200, y: 110 }, { x: 200, y: 170 }] });
+    strokes.push({ color: "#38B000", width: 4, points: [{ x: 600, y: 140 }, { x: 640, y: 140 }, { x: 620, y: 110 }, { x: 620, y: 170 }] });
+  }
+  return strokes;
+}
+
 function blankState() {
   return {
     initialized: false, code: "", hostId: "", mode: "study", selectionTime: 20,
@@ -78,7 +113,8 @@ function blankState() {
     phase: "LOBBY", players: {}, playerOrder: [], drawerIndex: 0, drawerId: null,
     currentWord: "", wordOptions: [], revealed: [], strokes: [], currentSlideIndex: 0,
     usedSlides: [], totalSlides: 0, pdfName: "ML Lecture Slides", deadline: 0,
-    hintBroadcasted: false, studyPairs: [], classicCategory: "general", usedClassicWords: []
+    hintBroadcasted: false, studyPairs: [], classicCategory: "general", usedClassicWords: [],
+    hasBot: false, botDoodleStep: 0, botGuessedRound: false
   };
 }
 
@@ -126,7 +162,11 @@ export class GameRoom {
 
   sockets() { return this.ctx.getWebSockets(); }
   socketPlayer(ws) { try { return ws.deserializeAttachment()?.playerId || null; } catch { return null; } }
-  connectedIds() { return new Set(this.sockets().map(ws => this.socketPlayer(ws)).filter(Boolean)); }
+  connectedIds() {
+    const set = new Set(this.sockets().map(ws => this.socketPlayer(ws)).filter(Boolean));
+    if (this.room?.hasBot && this.room?.players?.["bot_ai"]) set.add("bot_ai");
+    return set;
+  }
 
   playersList() {
     const online = this.connectedIds();
@@ -245,7 +285,22 @@ export class GameRoom {
     }
     if (!this.room.players[playerId]) return;
     if (type === "profile" && this.room.phase === "LOBBY") this.room.players[playerId].avatar = String(data.avatar || "cat").slice(0,80);
-    else if (type === "update_settings" && playerId === this.room.hostId && this.room.phase === "LOBBY") {
+    else if (type === "add_bot" && playerId === this.room.hostId && this.room.phase === "LOBBY") {
+      this.room.hasBot = true;
+      this.room.players["bot_ai"] = {
+        id: "bot_ai", name: "🤖 Professor Paws", avatar: "cat", score: 0,
+        is_host: false, is_drawing: false, has_guessed: false, connected: true
+      };
+      if (!this.room.playerOrder.includes("bot_ai")) this.room.playerOrder.push("bot_ai");
+      await this.save();
+      this.broadcast({ type: "player_joined", player: this.room.players["bot_ai"], players: this.playersList() });
+    } else if (type === "remove_bot" && playerId === this.room.hostId && this.room.phase === "LOBBY") {
+      this.room.hasBot = false;
+      delete this.room.players["bot_ai"];
+      this.room.playerOrder = this.room.playerOrder.filter(id => id !== "bot_ai");
+      await this.save();
+      this.broadcast({ type: "player_left", player_id: "bot_ai", players: this.playersList() });
+    } else if (type === "update_settings" && playerId === this.room.hostId && this.room.phase === "LOBBY") {
       this.room.mode = ["classic","study"].includes(data.mode) ? data.mode : "study";
       if (data.classic_category && CLASSIC_CATEGORIES[data.classic_category]) this.room.classicCategory = data.classic_category;
       this.room.drawTime = Math.max(30, Math.min(180, Number(data.draw_time) || 120));
@@ -273,7 +328,7 @@ export class GameRoom {
   async disconnect(playerId) {
     await this.load(); if (!playerId || !this.room.players[playerId]) return;
     if (playerId === this.room.hostId) {
-      const online = [...this.connectedIds()].filter(id => id !== playerId);
+      const online = [...this.connectedIds()].filter(id => id !== playerId && id !== "bot_ai");
       if (online[0]) { this.room.hostId = online[0]; for (const p of Object.values(this.room.players)) p.is_host = p.id === online[0]; }
     }
     this.broadcast({ type: "player_left", player_id: playerId, players: this.playersList() });
@@ -282,10 +337,12 @@ export class GameRoom {
   }
 
   async returnToLobby() {
-    Object.assign(this.room, { phase: "LOBBY", drawerId: null, currentWord: "", deadline: 0, strokes: [], currentRound: 1 });
+    Object.assign(this.room, { phase: "LOBBY", drawerId: null, currentWord: "", deadline: 0, strokes: [], currentRound: 1, botDoodleStep: 0, botGuessedRound: false });
     for (const p of Object.values(this.room.players)) { p.is_drawing = false; p.has_guessed = false; }
     await this.ctx.storage.deleteAlarm(); await this.save();
-    for (const id of this.connectedIds()) this.sendTo(id, { type: "room_state", state: await this.roomState(id) });
+    for (const id of this.connectedIds()) {
+      if (id !== "bot_ai") this.sendTo(id, { type: "room_state", state: await this.roomState(id) });
+    }
   }
 
   async startGame(playerId) {
@@ -314,7 +371,7 @@ export class GameRoom {
 
     this.room.drawerId = this.room.playerOrder[this.room.drawerIndex++];
     for (const p of Object.values(this.room.players)) { p.has_guessed = false; p.is_drawing = p.id === this.room.drawerId; }
-    Object.assign(this.room, { strokes: [], currentWord: "", revealed: [], hintBroadcasted: false, phase: "WORD_SELECTION" });
+    Object.assign(this.room, { strokes: [], currentWord: "", revealed: [], hintBroadcasted: false, phase: "WORD_SELECTION", botDoodleStep: 0, botGuessedRound: false });
     await this.beginSelection();
   }
 
@@ -359,7 +416,7 @@ export class GameRoom {
       if (!Array.isArray(this.room.usedClassicWords)) this.room.usedClassicWords = [];
       if (!this.room.usedClassicWords.includes(match)) this.room.usedClassicWords.push(match);
     }
-    Object.assign(this.room, { currentWord: match, phase: "DRAWING", deadline: Date.now() + this.room.drawTime*1000, revealed: [], hintBroadcasted: false });
+    Object.assign(this.room, { currentWord: match, phase: "DRAWING", deadline: Date.now() + this.room.drawTime*1000, revealed: [], hintBroadcasted: false, botDoodleStep: 0, botGuessedRound: false });
     const masked = this.maskedWord(), lengths = this.wordLengths();
     this.sendTo(this.room.drawerId, { type: "drawing_started_drawer", word: match, masked_word: masked, word_lengths: lengths,
       slide, draw_time: this.room.drawTime, round: this.room.currentRound, total_rounds: this.room.totalRounds });
@@ -409,6 +466,18 @@ export class GameRoom {
     await this.load(); const left = this.remaining();
     if (this.room.phase === "WORD_SELECTION") {
       this.broadcast({ type:"selection_tick", time_remaining:left });
+      if (this.room.drawerId === "bot_ai" && left <= this.room.selectionTime - 1) {
+        const slide = this.room.mode === "study" ? await this.getSlide() : null;
+        let word = "Cat";
+        if (this.room.mode === "classic" && this.room.wordOptions?.length) {
+          word = this.room.wordOptions[Math.floor(Math.random() * this.room.wordOptions.length)];
+        } else if (this.room.mode === "study" && slide?.word_boxes?.length) {
+          word = slide.word_boxes[Math.floor(Math.random() * slide.word_boxes.length)].word;
+        }
+        await this.selectWord("bot_ai", word);
+        await this.save();
+        return;
+      }
       if (left <= 0) return this.endRound("No word selected — turn passed");
     } else if (this.room.phase === "DRAWING") {
       this.broadcast({ type:"timer_tick", time_remaining:left });
@@ -423,6 +492,40 @@ export class GameRoom {
       if (this.room.mode === "study" && left <= Math.floor(this.room.drawTime*.7) && !this.room.hintBroadcasted) {
         this.room.hintBroadcasted=true; this.broadcast({type:"contextual_hint",hint:await this.hint()});
       }
+
+      // --- BOT LOGIC DURING DRAWING ---
+      if (this.room.hasBot && this.room.players["bot_ai"]) {
+        if (this.room.drawerId === "bot_ai") {
+          const elapsed = this.room.drawTime - left;
+          if (elapsed > 0 && elapsed % 3 === 0 && (this.room.botDoodleStep || 0) < 5) {
+            const step = this.room.botDoodleStep || 0;
+            const strokes = getBotDoodleStrokes(step);
+            for (const stroke of strokes) {
+              this.room.strokes.push(stroke);
+              this.broadcast({ type: "stroke_drawn", stroke });
+            }
+            this.room.botDoodleStep = step + 1;
+          }
+        } else {
+          const botPlayer = this.room.players["bot_ai"];
+          if (!botPlayer.has_guessed && !this.room.botGuessedRound) {
+            const guessTime = Math.floor(this.room.drawTime * 0.45);
+            const nudgeTime = Math.floor(this.room.drawTime * 0.70);
+            if (left === nudgeTime) {
+              this.broadcast({
+                type: "chat_message",
+                message: { sender_id: "bot_ai", sender_name: "🤖 Professor Paws", avatar: "cat", text: "Looking at your drawing... let me think! 🐾", is_system: false, is_correct: false }
+              });
+            } else if (left <= guessTime) {
+              this.room.botGuessedRound = true;
+              await this.guess("bot_ai", this.room.currentWord);
+              await this.save();
+              return;
+            }
+          }
+        }
+      }
+
       if (left <= 0) return this.endRound("Time's Up!");
     } else if (this.room.phase === "ROUND_REVIEW") {
       if (left <= 0) return this.nextTurn();

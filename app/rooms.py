@@ -107,16 +107,48 @@ CLASSIC_CATEGORIES = {
 
 CLASSIC_WORDS = CLASSIC_CATEGORIES["general"]
 
+def get_bot_doodle_strokes(step: int) -> list:
+    import math
+    strokes = []
+    if step == 0:
+        points = []
+        cx, cy, r = 400, 300, 120
+        for i in range(37):
+            angle = (i * 10 * math.pi) / 180
+            points.append({"x": cx + r * math.cos(angle), "y": cy + r * math.sin(angle)})
+        strokes.append({"color": "#1E1E24", "width": 5, "points": points})
+    elif step == 1:
+        strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 350, "y": 260}, {"x": 355, "y": 265}, {"x": 360, "y": 260}]})
+        strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 440, "y": 260}, {"x": 445, "y": 265}, {"x": 450, "y": 260}]})
+    elif step == 2:
+        mouth = []
+        for i in range(21):
+            angle = math.pi * 0.2 + (i * math.pi * 0.6) / 20
+            mouth.append({"x": 400 + 50 * math.cos(angle), "y": 300 + 40 * math.sin(angle)})
+        strokes.append({"color": "#FF5964", "width": 5, "points": mouth})
+        strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 310, "y": 210}, {"x": 300, "y": 130}, {"x": 360, "y": 190}]})
+        strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 490, "y": 210}, {"x": 500, "y": 130}, {"x": 440, "y": 190}]})
+    elif step == 3:
+        strokes.append({"color": "#FFE600", "width": 6, "points": [{"x": 395, "y": 290}, {"x": 405, "y": 290}, {"x": 400, "y": 298}, {"x": 395, "y": 290}]})
+        strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 340, "y": 295}, {"x": 260, "y": 285}]})
+        strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 340, "y": 305}, {"x": 260, "y": 315}]})
+        strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 460, "y": 295}, {"x": 540, "y": 285}]})
+        strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 460, "y": 305}, {"x": 540, "y": 315}]})
+    elif step == 4:
+        strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 180, "y": 140}, {"x": 220, "y": 140}, {"x": 200, "y": 110}, {"x": 200, "y": 170}]})
+        strokes.append({"color": "#38B000", "width": 4, "points": [{"x": 600, "y": 140}, {"x": 640, "y": 140}, {"x": 620, "y": 110}, {"x": 620, "y": 170}]})
+    return strokes
+
 class GameRoom:
     def __init__(self, code: str, host_id: str, default_pdf: str = "sample_slides/ml_lecture_slides.pdf"):
-        self.code = code
+        self.code = code.upper()
         self.host_id = host_id
         self.players: Dict[str, Player] = {}
         self.connections: Dict[str, WebSocket] = {}
         
-        # Settings
-        self.mode = "study"
-        self.classic_category = "general"
+        # Room Configuration
+        self.mode: str = "study" # "study" | "classic"
+        self.classic_category: str = "general"
         self.used_classic_words: List[str] = []
         self.selection_time = 20
         self.review_time = 5
@@ -151,6 +183,11 @@ class GameRoom:
         # Player rotation order
         self.player_order: List[str] = []
         self.drawer_index: int = 0
+
+        # AI Bot Solo Play
+        self.has_bot: bool = False
+        self.bot_doodle_step: int = 0
+        self.bot_guessed_round: bool = False
 
     def add_player(self, player_id: str, name: str, avatar: str, ws: WebSocket) -> Player:
         is_host = (len(self.players) == 0) or (player_id == self.host_id)
@@ -243,6 +280,37 @@ class GameRoom:
             "pdf_name": self.slide_manager.pdf_name
         })
 
+    async def add_bot(self):
+        self.has_bot = True
+        bot_player = Player(
+            id="bot_ai",
+            name="🤖 Professor Paws",
+            avatar="cat",
+            score=0,
+            is_host=False,
+            connected=True
+        )
+        self.players["bot_ai"] = bot_player
+        if "bot_ai" not in self.player_order:
+            self.player_order.append("bot_ai")
+        await self.broadcast({
+            "type": "player_joined",
+            "player": bot_player.model_dump(),
+            "players": [p.model_dump() for p in self.players.values()]
+        })
+
+    async def remove_bot(self):
+        self.has_bot = False
+        if "bot_ai" in self.players:
+            del self.players["bot_ai"]
+        if "bot_ai" in self.player_order:
+            self.player_order.remove("bot_ai")
+        await self.broadcast({
+            "type": "player_left",
+            "player_id": "bot_ai",
+            "players": [p.model_dump() for p in self.players.values()]
+        })
+
     def word_lengths(self):
         return [len(part) for part in re.findall(r"[A-Za-z0-9]+", self.current_word)]
 
@@ -258,6 +326,8 @@ class GameRoom:
         self.time_remaining = 0
         self.strokes = []
         self.current_round = 1
+        self.bot_doodle_step = 0
+        self.bot_guessed_round = False
         for player in self.players.values():
             player.is_drawing = False
             player.has_guessed = False
@@ -363,6 +433,8 @@ class GameRoom:
         self.current_drawing_snapshot = None
         self.revealed_indices = set()
         self.hint_broadcasted = False
+        self.bot_doodle_step = 0
+        self.bot_guessed_round = False
         self.state = "WORD_SELECTION"
 
         await self.begin_selection()
@@ -396,6 +468,18 @@ class GameRoom:
 
     async def word_selection_timer(self):
         try:
+            if self.drawer_id == "bot_ai":
+                await asyncio.sleep(1)
+                if self.state == "WORD_SELECTION":
+                    slide = self.active_slide()
+                    word = "Cat"
+                    if self.mode == "classic" and self.word_options:
+                        word = random.choice(self.word_options)
+                    elif self.mode == "study" and slide and slide.word_boxes:
+                        word = random.choice(slide.word_boxes).word
+                    await self.set_secret_word("bot_ai", word)
+                    return
+
             while self.time_remaining > 0 and self.state == "WORD_SELECTION":
                 await asyncio.sleep(1)
                 self.time_remaining -= 1
@@ -427,6 +511,8 @@ class GameRoom:
         self.time_remaining = self.draw_time
         self.revealed_indices = set()
         self.hint_broadcasted = False
+        self.bot_doodle_step = 0
+        self.bot_guessed_round = False
 
         slide = self.active_slide()
 
@@ -482,7 +568,6 @@ class GameRoom:
 
                 # Letter reveal 1: at 50% time
                 if self.time_remaining == halfway_time and len(self.current_word) > 3 and not self.revealed_indices:
-                    # Reveal first letter or random letter
                     self.revealed_indices.add(0)
                     masked = self.get_masked_word()
                     await self.broadcast({
@@ -503,7 +588,7 @@ class GameRoom:
                             "revealed_count": len(self.revealed_indices)
                         })
 
-                # Contextual slide clue at 35s remaining
+                # Contextual slide clue
                 if self.mode == "study" and self.time_remaining <= int(self.draw_time * .7) and not self.hint_broadcasted:
                     self.hint_broadcasted = True
                     hint_text = self.slide_manager.get_contextual_hint(self.current_slide_index, self.current_word)
@@ -511,6 +596,39 @@ class GameRoom:
                         "type": "contextual_hint",
                         "hint": hint_text
                     })
+
+                # AI Bot behavior during drawing
+                if self.has_bot and "bot_ai" in self.players:
+                    if self.drawer_id == "bot_ai":
+                        elapsed = self.draw_time - self.time_remaining
+                        if elapsed > 0 and elapsed % 3 == 0 and self.bot_doodle_step < 5:
+                            step_strokes = get_bot_doodle_strokes(self.bot_doodle_step)
+                            for s_data in step_strokes:
+                                stroke = Stroke(**s_data)
+                                self.strokes.append(stroke)
+                                await self.broadcast({"type": "stroke_drawn", "stroke": s_data})
+                            self.bot_doodle_step += 1
+                    else:
+                        bot_player = self.players.get("bot_ai")
+                        if bot_player and not bot_player.has_guessed and not self.bot_guessed_round:
+                            guess_time = int(self.draw_time * 0.45)
+                            nudge_time = int(self.draw_time * 0.70)
+                            if self.time_remaining == nudge_time:
+                                await self.broadcast({
+                                    "type": "chat_message",
+                                    "message": {
+                                        "sender_id": "bot_ai",
+                                        "sender_name": "🤖 Professor Paws",
+                                        "avatar": "cat",
+                                        "text": "Looking at your drawing... let me think! 🐾",
+                                        "is_system": False,
+                                        "is_correct": False
+                                    }
+                                })
+                            elif self.time_remaining <= guess_time:
+                                self.bot_guessed_round = True
+                                await self.handle_guess("bot_ai", self.current_word)
+                                return
 
             if self.state == "DRAWING":
                 await self.end_round(reason="Time's Up!")

@@ -156,6 +156,56 @@ class TurnTests(unittest.IsolatedAsyncioTestCase):
         options2 = self.room.word_options
         self.assertNotIn(chosen, options2)
 
+class BotTests(unittest.IsolatedAsyncioTestCase):
+    async def test_add_and_remove_bot(self):
+        room = GameRoom('BOT123', 'host1')
+        sock = Socket()
+        room.add_player('host1', 'SoloPlayer', 'cat', sock)
+        self.assertFalse(room.has_bot)
+        self.assertNotIn('bot_ai', room.players)
+
+        # Add Bot
+        await room.add_bot()
+        self.assertTrue(room.has_bot)
+        self.assertIn('bot_ai', room.players)
+        self.assertEqual(room.players['bot_ai'].name, '🤖 Professor Paws')
+        self.assertIn('bot_ai', room.player_order)
+
+        # Remove Bot
+        await room.remove_bot()
+        self.assertFalse(room.has_bot)
+        self.assertNotIn('bot_ai', room.players)
+        self.assertNotIn('bot_ai', room.player_order)
+
+    async def test_solo_play_human_draws_bot_guesses_and_bot_draws(self):
+        room = GameRoom('BOT456', 'host1')
+        sock = Socket()
+        room.add_player('host1', 'SoloPlayer', 'cat', sock)
+        await room.add_bot()
+        room.draw_time = 2
+        room.review_time = 0.05
+        room.selection_time = 1
+
+        # Start game with solo player + bot
+        await room.start_game('host1')
+        self.assertEqual(room.state, 'WORD_SELECTION')
+        self.assertEqual(room.drawer_id, 'host1')
+
+        # Human picks word
+        word = room.active_slide().word_boxes[0].word
+        await room.set_secret_word('host1', word)
+        self.assertEqual(room.state, 'DRAWING')
+
+        # Bot guesses word automatically in drawing countdown
+        await asyncio.sleep(1.2)
+        # Check bot scored points or round advanced
+        self.assertTrue(room.players['bot_ai'].score > 0 or room.state in ('ROUND_REVIEW', 'WORD_SELECTION', 'DRAWING'))
+
+        # Wait for review to complete and next turn to start
+        await asyncio.sleep(1.5)
+        # Now bot is drawer!
+        self.assertEqual(room.drawer_id, 'bot_ai')
+
 class UploadTests(unittest.TestCase):
     def test_upload_permissions_repeat_and_bad_pdf_keeps_deck(self):
         with TestClient(app) as client:

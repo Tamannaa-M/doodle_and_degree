@@ -94,14 +94,6 @@ DoodleAndDegreeApp.prototype.initNewControls = function() {
   document.querySelectorAll('[data-lobby]').forEach(btn=>btn.onclick=()=>{
     if(this.isHost && this.ws?.readyState===WebSocket.OPEN) this.ws.send(JSON.stringify({type:'return_to_lobby'}));
   });
-  document.getElementById('btnGuesserPreview').onclick=()=>{
-    if(!this.isDrawer || this.gameState!=='DRAWING') return;
-    this.guesserPreview=!this.guesserPreview;
-    this.canvas.setCanDraw(!this.guesserPreview);
-    this.drawerToolbar.classList.toggle('hidden',this.guesserPreview);
-    this.guesserPreview ? this.renderMaskedWord(this.lastMaskedWord) : this.renderDrawerSecretWord(this.secretWord);
-    this.updateRoleControls();
-  };
   const slidePanel=document.getElementById('slideViewport').parentElement;
   slidePanel.id='slidePanel';
   slidePanel.parentElement.classList.add('game-board');
@@ -111,10 +103,7 @@ DoodleAndDegreeApp.prototype.initNewControls = function() {
 DoodleAndDegreeApp.prototype.updateRoleControls = function() {
   document.getElementById('btnLeaveRoom').classList.toggle('hidden',!this.roomCode);
   document.querySelectorAll('[data-lobby]').forEach(btn=>{btn.hidden=!this.isHost;btn.title='End the current game and return everyone to this room’s lobby';});
-  const preview=document.getElementById('btnGuesserPreview');
-  preview.classList.toggle('hidden',!this.isDrawer || this.gameState!=='DRAWING');
-  preview.textContent=this.guesserPreview?'← Back to drawing':'Guesser view';
-  document.getElementById('roleLabel').textContent=this.guesserPreview?'Guesser preview · your word is hidden; invite a friend to guess':this.isDrawer?'You are drawing · friends guess your word':'You are guessing · watch the drawing and type below';
+  document.getElementById('roleLabel').textContent=this.isDrawer?'You are drawing · friends guess your word':'You are guessing · watch the drawing and type below';
   this.chatInput.disabled=this.isDrawer || this.gameState!=='DRAWING';
   this.btnSendChat.disabled=this.chatInput.disabled;
   this.chatInput.placeholder=this.isDrawer?'You are the drawer — your friends guess here':'Type your guess here…';
