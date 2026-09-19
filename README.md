@@ -1,8 +1,12 @@
 # Doodle & Degree
 
-Draw terribly. Guess brilliantly.
+> **Draw terribly. Guess brilliantly. Turn your lecture slides into a game — or just play classic pictionary!**
 
-## Put it online for free
+🎮 **Live Play Link**: [https://doodle-and-degree.tamannaamanchikanti.workers.dev](https://doodle-and-degree.tamannaamanchikanti.workers.dev)
+
+[![Play Doodle & Degree](https://img.shields.io/badge/Play%20Now-Live%20on%20Cloudflare-FF4B82?style=for-the-badge&logo=cloudflare&logoColor=white)](https://doodle-and-degree.tamannaamanchikanti.workers.dev)
+
+---
 
 The `cloudflare` folder contains the no-card deployment edition. It preserves Classic and Study modes, uploaded PDFs, multiplayer rooms, drawing, guessing, timers, close-spelling hints, avatars, and the current interface. Cloudflare Durable Objects keep each live room together without a continuously billed Python server. See `cloudflare/README.md` for the short deployment steps.
 
