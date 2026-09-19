@@ -367,6 +367,10 @@ export default {
       const stub = env.ROOMS.get(env.ROOMS.idFromName(parts[1].toUpperCase()));
       return stub.fetch(`https://room/connect?player=${encodeURIComponent(parts[2])}`, request);
     }
+    if (url.pathname.startsWith("/static/")) {
+      const assetUrl = new URL(url.pathname.replace(/^\/static/, ""), url.origin);
+      return env.ASSETS.fetch(new Request(assetUrl, request));
+    }
     return env.ASSETS.fetch(request);
   }
 };
