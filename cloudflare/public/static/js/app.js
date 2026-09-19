@@ -573,6 +573,7 @@ class DoodleAndDegreeApp {
       case 'word_selection_drawer':
         this.isDrawer = true;
         this.canvas.setCanDraw(false);
+        this.modalRoundReview.classList.add('hidden');
         this.showGameView();
         this.slideViewer.loadSlide(msg.slide);
         this.slideViewer.setClickToPickEnabled(true);
@@ -583,6 +584,7 @@ class DoodleAndDegreeApp {
       case 'word_selection_guesser':
         this.isDrawer = false;
         this.canvas.setCanDraw(false);
+        this.modalRoundReview.classList.add('hidden');
         this.showGameView();
         this.slideViewer.loadSlide(msg.slide);
         this.slideViewer.setClickToPickEnabled(false);

@@ -338,10 +338,13 @@ export class GameRoom {
       if (this.room.mode === "study" && left <= Math.floor(this.room.drawTime*.7) && !this.room.hintBroadcasted) {
         this.room.hintBroadcasted=true; this.broadcast({type:"contextual_hint",hint:await this.hint()});
       }
-      if (left <= 0) return this.endRound("Time's Up!");
-    } else if (this.room.phase === "ROUND_REVIEW" && left <= 0) return this.nextTurn();
-    else return;
-    await this.save(); await this.ctx.storage.setAlarm(Date.now()+1000);
+    } else if (this.room.phase === "ROUND_REVIEW") {
+      if (left <= 0) return this.nextTurn();
+    } else {
+      return;
+    }
+    await this.save();
+    await this.ctx.storage.setAlarm(Date.now() + 1000);
   }
 }
 
