@@ -409,8 +409,23 @@ class DoodleAndDegreeApp {
   }
 
   async preparePdfInBrowser(file) {
+    if (!window.pdfjsLib) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = '/js/pdf.min.js';
+        s.onload = resolve;
+        s.onerror = () => {
+          const s2 = document.createElement('script');
+          s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+          s2.onload = resolve;
+          s2.onerror = () => reject(new Error('The PDF reader could not load. Check your connection and try again.'));
+          document.head.appendChild(s2);
+        };
+        document.head.appendChild(s);
+      });
+    }
     if (!window.pdfjsLib) throw new Error('The PDF reader could not load. Check your connection and try again.');
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/static/js/pdf.worker.min.js';
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js';
     const documentTask = window.pdfjsLib.getDocument({data: await file.arrayBuffer()});
     const pdf = await documentTask.promise;
     if (pdf.numPages > 40) throw new Error('Please use a PDF with 40 slides or fewer.');
