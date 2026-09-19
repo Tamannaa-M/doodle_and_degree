@@ -428,40 +428,76 @@ class DoodleAndDegreeApp {
     window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js';
     const documentTask = window.pdfjsLib.getDocument({data: await file.arrayBuffer()});
     const pdf = await documentTask.promise;
-    if (pdf.numPages > 40) throw new Error('Please use a PDF with 40 slides or fewer.');
+    if (pdf.numPages > 120) throw new Error('Please use a presentation with 120 slides or fewer.');
     const stop = new Set('the and for that this with from have are which using where into their will what when more such each then them some other about slide study terms between across while these there those'.split(' '));
-    const technical = new Set('perceptron activation gradient descent backpropagation weights overfitting sigmoid softmax decision tree ensemble boosting forest entropy residuals variance convolution kernel pooling filter invariance pixels tensors transformer attention tokenizer embedding tokens encoder decoder policy reward exploration environment state action discount neural network vectors'.split(' '));
+    const technical = new Set('perceptron activation gradient descent backpropagation weights overfitting sigmoid softmax decision tree ensemble boosting forest entropy residuals variance convolution kernel pooling filter invariance pixels tensors transformer attention tokenizer embedding tokens encoder decoder policy reward exploration environment state action discount neural network vectors architecture workflow pipeline analysis component structure algorithm function parameter benchmark optimization'.split(' '));
     const slides = [];
+    const deckWideWords = new Set();
+
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
       this.status(`Preparing slide ${pageNumber} of ${pdf.numPages}…`);
       const page = await pdf.getPage(pageNumber);
       const base = page.getViewport({scale:1});
-      const renderScale = Math.min(1.5, 850 / base.width);
+      const renderScale = Math.min(1.2, 750 / base.width);
       const viewport = page.getViewport({scale:renderScale});
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(viewport.width); canvas.height = Math.round(viewport.height);
       await page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport}).promise;
-      let quality=.68, imageUrl=canvas.toDataURL('image/jpeg',quality);
-      while(imageUrl.length>60000 && quality>.24){quality-=.08;imageUrl=canvas.toDataURL('image/jpeg',quality);}
+      let quality = 0.55;
+      let imageUrl = canvas.toDataURL('image/jpeg', quality);
+      while(imageUrl.length > 45000 && quality > 0.22){ quality -= 0.08; imageUrl = canvas.toDataURL('image/jpeg', quality); }
+      
       const content = await page.getTextContent();
-      const wordBoxes=[], candidates=new Set(), textParts=[];
+      const wordBoxes = [], candidates = new Set(), textParts = [];
       for (const item of content.items) {
-        const line=String(item.str||'').trim(); if(!line) continue; textParts.push(line);
-        const tx=window.pdfjsLib.Util.transform(viewport.transform,item.transform);
-        const x=tx[4], fontHeight=Math.max(8,Math.hypot(tx[2],tx[3])), y=tx[5]-fontHeight;
-        const width=Math.max(1,(Number(item.width)||line.length*fontHeight*.45)*renderScale);
-        const matcher=/[A-Za-z]{3,}/g; let match;
-        while((match=matcher.exec(line)) && wordBoxes.length<180){
-          const clean=match[0], lower=clean.toLowerCase(); if(stop.has(lower)) continue;
-          const x0=x+width*(match.index/Math.max(1,line.length));
-          const x1=x+width*((match.index+clean.length)/Math.max(1,line.length));
-          wordBoxes.push({word:clean,norm_box:[Math.max(0,x0/viewport.width),Math.max(0,y/viewport.height),Math.min(1,x1/viewport.width),Math.min(1,(y+fontHeight*1.15)/viewport.height)],difficulty:(clean.length>=8||technical.has(lower))?'challenging':'simple'});
-          candidates.add(clean[0].toUpperCase()+clean.slice(1));
+        const line = String(item.str||'').trim(); if(!line) continue; textParts.push(line);
+        const tx = window.pdfjsLib.Util.transform(viewport.transform,item.transform);
+        const x = tx[4], fontHeight = Math.max(8,Math.hypot(tx[2],tx[3])), y = tx[5]-fontHeight;
+        const width = Math.max(1,(Number(item.width)||line.length*fontHeight*.45)*renderScale);
+        const matcher = /[A-Za-z]{3,}/g; let match;
+        while((match = matcher.exec(line)) && wordBoxes.length < 180){
+          const clean = match[0], lower = clean.toLowerCase(); if(stop.has(lower)) continue;
+          const x0 = x + width * (match.index / Math.max(1, line.length));
+          const x1 = x + width * ((match.index + clean.length) / Math.max(1, line.length));
+          wordBoxes.push({
+            word: clean,
+            norm_box: [Math.max(0, x0/viewport.width), Math.max(0, y/viewport.height), Math.min(1, x1/viewport.width), Math.min(1, (y + fontHeight*1.15)/viewport.height)],
+            difficulty: (clean.length >= 8 || technical.has(lower)) ? 'challenging' : 'simple'
+          });
+          const titleCase = clean[0].toUpperCase() + clean.slice(1);
+          candidates.add(titleCase);
+          deckWideWords.add(titleCase);
         }
       }
-      if(!wordBoxes.length) throw new Error(`Slide ${pageNumber} has no selectable text. Use a text-based PDF rather than scanned pictures.`);
-      const all=[...candidates].sort(), simple=all.filter(x=>x.length<8&&!technical.has(x.toLowerCase())), challenging=all.filter(x=>x.length>=8||technical.has(x.toLowerCase()));
-      slides.push({page_num:pageNumber,image_url:imageUrl,text_content:textParts.join(' ').slice(0,12000),word_boxes:wordBoxes,simple_terms:simple.slice(0,6),challenging_terms:challenging.slice(0,6)});
+
+      // If slide is a pure image / diagram / visual PowerPoint slide with no text, generate smart study keywords
+      if (!wordBoxes.length) {
+        const fallbacks = [...deckWideWords].slice(0, 4);
+        if (fallbacks.length < 4) {
+          const defaults = ['Diagram', 'Architecture', 'Overview', 'Workflow', 'System', 'Process', 'Component', 'Structure'];
+          for (const d of defaults) { if (fallbacks.length < 4 && !fallbacks.includes(d)) fallbacks.push(d); }
+        }
+        fallbacks.forEach((term, idx) => {
+          candidates.add(term);
+          wordBoxes.push({
+            word: term,
+            norm_box: [0.08 + (idx * 0.22), 0.84, 0.26 + (idx * 0.22), 0.95],
+            difficulty: idx % 2 === 0 ? 'simple' : 'challenging'
+          });
+        });
+      }
+
+      const all = [...candidates].sort();
+      const simple = all.filter(x => x.length < 8 && !technical.has(x.toLowerCase()));
+      const challenging = all.filter(x => x.length >= 8 || technical.has(x.toLowerCase()));
+      slides.push({
+        page_num: pageNumber,
+        image_url: imageUrl,
+        text_content: textParts.join(' ').slice(0, 12000),
+        word_boxes: wordBoxes,
+        simple_terms: (simple.length ? simple : all).slice(0, 6),
+        challenging_terms: (challenging.length ? challenging : all).slice(0, 6)
+      });
     }
     return slides;
   }
