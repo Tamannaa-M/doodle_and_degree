@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doodle & Degree - Split-Screen Slide Study Game</title>
+
+  <!-- Google Fonts: Space Grotesk & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="/static/js/tailwind-local.js"></script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom Neo-Brutalist CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/upgrade.css">
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Top Navigation / Header -->
+  <header class="border-b-[3px] border-black bg-white sticky top-0 z-40 px-4 py-2.5 shadow-[0_3px_0_#1E1E24]">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <!-- Mascot Logo -->
+      <a href="/" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 transform group-hover:rotate-12 transition-transform">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="#FFE600" stroke="#1E1E24" stroke-width="4"/>
+            <path d="M26 62 C22 46, 26 36, 34 38 C38 40, 42 45, 46 45 C50 45, 54 40, 58 38 C66 36, 70 46, 66 62 Z" fill="#FCFBF7" stroke="#1E1E24" stroke-width="3.5"/>
+            <path d="M46 16 L78 27 L46 38 L14 27 Z" fill="#1E1E24"/>
+            <circle cx="46" cy="27" r="3" fill="#FFE600"/>
+            <path d="M46 27 Q68 28 68 42 L66 48" fill="none" stroke="#FFE600" stroke-width="3"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-black text-xl tracking-tight text-[#1E1E24]">DOODLE <span class="text-[#FF4B82]">&</span> DEGREE</span>
+          <span class="hidden sm:inline-block ml-2 text-[10px] font-black uppercase bg-[#00E5A3] px-1.5 py-0.5 border border-black rounded shadow-[1px_1px_0_#1E1E24]">DRAW · GUESS · REPEAT</span>
+        </div>
+      </a>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="btnLeaveRoom" class="neo-btn bg-white px-2.5 py-1.5 text-xs hidden">← Leave room</button>
+        <button id="btnShowGuide" class="neo-btn bg-[#FFE600] text-black px-2.5 py-1.5 text-xs">
+          How to play ↗
+        </button>
+        <button id="btnToggleSound" class="neo-btn bg-white px-2.5 py-1.5 text-xs">
+          🔊 Sound: ON
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex flex-col">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: LOBBY VIEW                         -->
+    <!-- ========================================== -->
+    <div id="viewLobby" class="w-full my-auto flex flex-col items-center">
+      
+<section class="hero-board">
+  <div class="hero-copy"><span class="eyebrow">A LITTLE CHAOS. A LOT OF AHA!</span>
+    <h1>BIG DOODLES.<br><span>BIGGER BRAINS.</span></h1>
+    <p>Draw terribly. Guess brilliantly. Turn your lecture slides into a game — or just play for the fun of it.</p>
+    <div class="hero-tags"><span>✦ NO ART SKILLS REQUIRED</span><span class="pink-tag">100% GOOD CHAOS</span></div>
+  </div>
+  <div class="hero-art"><img src="/static/mascot.svg" alt="Grinning pink doodle cat holding a pencil, with a little rocket taking off"/><span class="art-note">study messy.<br>graduate anyway.</span></div>
+</section>
+<div class="lobby-grid">
+<section class="profile-card neo-box-lg">
+  <div class="section-kicker">01 / MAKE AN ENTRANCE</div><h2>Your doodle alter ego.</h2>
+  <div class="avatar-editor"><div id="avatarPreview" class="avatar-preview"></div><div class="avatar-fields">
+    <label>Hair <select id="avatarHair"><option value="0">Messy fringe</option><option value="1">Curly cloud</option><option value="2">Space buns</option><option value="3">Side sweep</option><option value="4">Long & wavy</option><option value="5">Buzz cut</option><option value="6">High ponytail</option><option value="7">Twin braids</option><option value="8">Short bob</option><option value="9">Long curls</option><option value="10">Side braid</option><option value="11">Half-up bun</option></select></label>
+    <label>Face style <select id="avatarGender"><option value="0">Male</option><option value="1">Female</option></select></label><label>Expression <select id="avatarFace"><option value="0">Big grin</option><option value="1">Cheeky wink</option><option value="2">Round glasses</option><option value="3">Sleepy scholar</option></select></label>
+    <label>Skin <select id="avatarSkin"><option value="0">Peach</option><option value="1">Honey</option><option value="2">Caramel</option><option value="3">Cocoa</option><option value="4">Rose</option><option value="5">Mint alien</option></select></label>
+    <label>Hair colour <select id="avatarColor"><option value="0">Ink</option><option value="1">Chestnut</option><option value="2">Golden</option><option value="3">Pink</option><option value="4">Blue</option></select></label>
+    <label>Shirt <select id="avatarShirt"><option value="0">Electric blue</option><option value="1">Hot pink</option><option value="2">Sunshine</option><option value="3">Mint</option><option value="4">Lilac</option></select></label>
+    <button id="randomAvatar" class="random-avatar" aria-label="Randomize avatar">↻ Remix me</button>
+  </div></div>
+  <label for="inputPlayerName" class="field-label">WHAT DO WE CALL YOU?</label><input id="inputPlayerName" maxlength="16" placeholder="Your nickname" class="neo-input w-full"/>
+  <div class="join-row"><input id="inputRoomCode" maxlength="6" placeholder="ROOM CODE" aria-label="Room code" class="neo-input"/><button id="btnJoinRoom" class="neo-btn neo-btn-yellow">Join room ↗</button></div>
+  <p class="small-note">Already got an invite? Jump into your friends’ room.</p>
+</section>
+<section class="room-card neo-box-lg">
+  <div class="section-kicker">02 / PICK YOUR KIND OF CHAOS</div><h2>Brain food or just fun?</h2>
+  <div class="mode-grid"><button class="mode-card selected" data-mode="study"><span class="mode-icon">✎</span><strong>Study & scribble</strong><small>Your slides. Your words.<br>Accidental revision.</small></button><button class="mode-card" data-mode="classic"><span class="mode-icon">✦</span><strong>Classic pictionary</strong><small>Everyday words.<br>Extraordinary bad art.</small></button></div>
+  <div id="hostSettingsBox">
+    <div class="settings-row"><label>DRAW TIME<select id="selectDrawTime" class="neo-input"><option value="60">60 seconds</option><option value="90">90 seconds</option><option value="120" selected>120 seconds</option><option value="150">150 seconds</option><option value="180">180 seconds</option></select></label><label>ROUNDS<select id="selectRounds" class="neo-input"><option value="1">1 round</option><option value="2">2 rounds</option><option value="3" selected>3 rounds</option><option value="5">5 rounds</option></select></label></div>
+    <div id="studyUpload"><div id="pdfDropzone" tabindex="0" role="button" aria-label="Upload lecture PDF"><span class="upload-icon">↥</span><div><strong>Drop your lecture PDF here</strong><small>or click to browse · we’ll create your room for you</small></div><input id="pdfFileInput" type="file" accept=".pdf" hidden/></div><div id="slideDeckInfo">Try the included 5-slide sample, or bring your own.</div></div>
+  </div>
+  <div id="roomStatus" class="room-status">YOUR NEXT GREAT DOODLE STARTS HERE</div>
+  <button id="btnCreateRoom" class="neo-btn neo-btn-primary create-button">Create a room ↗</button>
+  <div class="room-actions"><button id="btnStartGame" disabled class="neo-btn neo-btn-yellow">Let’s draw! →</button><button id="btnCopyInvite" class="neo-btn bg-white" disabled>Copy invite</button></div>
+  <div id="lobbyPlayerList" class="players-list"><p class="small-note">Play with friends, or practise on your own.</p></div>
+</section>
+</div>
+<div class="footer-strip"><span>✦ GOOD FRIENDS</span><span>✦ QUESTIONABLE DRAWINGS</span><span>✦ UNEXPECTED GENIUS</span></div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: IN-GAME SPLIT-SCREEN STUDY VIEW    -->
+    <!-- ========================================== -->
+    <div id="viewGame" class="hidden flex-1 flex flex-col gap-3">
+      
+      <div class="game-navigation"><span id="roleLabel">Waiting for your turn</span><div><button id="btnGuesserPreview" class="neo-btn bg-white hidden">Guesser view</button><button data-lobby class="neo-btn bg-white">← Back to lobby</button></div></div>
+      <!-- Top In-Game HUD -->
+      <div id="gameHud" class="neo-box p-3 flex flex-wrap items-center justify-between gap-2 bg-white">
+        <!-- Room Code & Round -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span class="bg-[#FFE600] border-2 border-black px-2.5 py-1 text-xs font-black rounded-lg shadow-[2px_2px_0_#1E1E24]">
+            ROOM: <span id="hudRoomCode">------</span>
+          </span>
+          <span id="hudRound" class="text-xs font-extrabold text-gray-700">
+            Round 1 of 3
+          </span>
+        </div>
+
+        <!-- Center: Word Blanks / Drawer Word Indicator -->
+        <div class="word-readout"><div id="hudWordMeta"></div><div id="hudWordBlanks" class="flex items-center justify-center flex-wrap gap-1">
+          <!-- Populated dynamically -->
+        </div></div>
+
+        <!-- Timer Badge -->
+        <div id="hudTimerBadge" class="neo-btn neo-btn-yellow px-3 py-1 text-sm font-black flex items-center gap-1.5">
+          ⏱️ <span id="hudTimer">120</span>s
+        </div>
+      </div>
+
+<section id="modalWordPick" class="pick-panel hidden" aria-label="Choose a word"><div><span class="section-kicker">YOUR TURN · <b id="selectionSeconds">20</b> SECONDS</span><h3 id="pickHeading">Your slide. Your choice.</h3><p id="pickDescription"></p></div><div id="simpleTermsContainer" class="classic-options"></div><div id="challengingTermsContainer" class="hidden"></div></section>
+      <!-- Contextual Sentence Clue Banner (Shown if guessers are stuck) -->
+      <div id="contextualHintBanner" class="hidden hint-banner p-2.5 px-4 flex items-center gap-2">
+        <span class="text-lg">💡</span>
+        <span id="hintText" class="text-xs font-black text-black">Hint: The word appears near '...improved by sequential ______...'</span>
+      </div>
+
+      <!-- Split-Screen Core Area -->
+      <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-[500px]">
+        
+        <!-- LEFT HALF (Cols 6): Live Interactive Drawing Canvas -->
+        <div class="lg:col-span-6 flex flex-col gap-2">
+          
+          <!-- Drawer Tools Toolbar (Visible when drawer) -->
+          <div id="drawerToolbar" class="neo-box p-2 flex flex-wrap items-center justify-between gap-2 bg-[#FCFBF7]">
+            <!-- Tool Buttons -->
+            <div class="flex items-center gap-1.5">
+              <button id="btnToolBrush" class="neo-btn neo-btn-primary px-2.5 py-1 text-xs" title="Brush">
+                🖌️ Brush
+              </button>
+              <button id="btnToolEraser" class="neo-btn bg-white px-2.5 py-1 text-xs" title="Eraser">
+                🧹 Eraser
+              </button>
+              <!-- Brush Size Slider -->
+              <input id="brushSizeSlider" type="range" min="2" max="24" value="6" class="w-16 accent-[#FF4B82]" title="Brush Size" />
+            </div>
+
+            <!-- Sketch Heads Inspired 16-Color Palette Grid -->
+            <div class="color-palette-grid">
+              <div class="color-swatch active" data-color="#1E1E24" style="background-color: #1E1E24;" title="Ink Black"></div>
+              <div class="color-swatch" data-color="#84CC16" style="background-color: #84CC16;" title="Lime Green"></div>
+              <div class="color-swatch" data-color="#6B7280" style="background-color: #6B7280;" title="Dark Gray"></div>
+              <div class="color-swatch" data-color="#00E5A3" style="background-color: #00E5A3;" title="Emerald Mint"></div>
+              <div class="color-swatch" data-color="#9CA3AF" style="background-color: #9CA3AF;" title="Light Gray"></div>
+              <div class="color-swatch" data-color="#15803D" style="background-color: #15803D;" title="Forest Green"></div>
+              <div class="color-swatch" data-color="#FFFFFF" style="background-color: #FFFFFF;" title="White"></div>
+              <div class="color-swatch" data-color="#06B6D4" style="background-color: #06B6D4;" title="Cyan"></div>
+              <div class="color-swatch" data-color="#DC2626" style="background-color: #DC2626;" title="Crimson Red"></div>
+              <div class="color-swatch" data-color="#38BDF8" style="background-color: #38BDF8;" title="Sky Blue"></div>
+              <div class="color-swatch" data-color="#FF4B82" style="background-color: #FF4B82;" title="Hot Pink"></div>
+              <div class="color-swatch" data-color="#2563EB" style="background-color: #2563EB;" title="Royal Blue"></div>
+              <div class="color-swatch" data-color="#FF7849" style="background-color: #FF7849;" title="Orange"></div>
+              <div class="color-swatch" data-color="#8B5CF6" style="background-color: #8B5CF6;" title="Purple"></div>
+              <div class="color-swatch" data-color="#FFE600" style="background-color: #FFE600;" title="Sun Yellow"></div>
+              <div class="color-swatch" data-color="#854D0E" style="background-color: #854D0E;" title="Brown"></div>
+            </div>
+
+            <!-- Undo / Clear -->
+            <div class="flex items-center gap-1.5">
+              <button id="btnToolUndo" class="neo-btn bg-white px-2.5 py-1 text-xs font-bold flex items-center gap-1" title="Undo Stroke">
+                <span>↩️</span><span>Undo</span>
+              </button>
+              <button id="btnToolClear" class="neo-btn bg-white px-2.5 py-1 text-xs font-bold flex items-center gap-1" title="Clear Canvas">
+                <span>🗑️</span><span>Clear</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Drawing Canvas Container -->
+          <div class="canvas-wrapper flex-1 relative min-h-[360px]">
+            <canvas id="drawingCanvas"></canvas>
+          </div>
+
+        </div>
+
+        <!-- RIGHT HALF (Cols 6): Split-Screen Lecture Slide Viewer -->
+        <div class="lg:col-span-6 flex flex-col gap-2">
+          
+          <!-- Slide Viewer Controls Bar -->
+          <div class="neo-box p-2 flex items-center justify-between bg-[#FCFBF7]">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-black uppercase text-[#1E1E24] flex items-center gap-1">
+                <span id="slideCaption">Lecture slide · same for everyone</span>
+              </span>
+              <span class="text-[10px] font-bold text-gray-500 hidden sm:inline">(Pan & Zoom Enabled)</span>
+            </div>
+
+            <!-- Zoom controls & Skip Slide -->
+            <div class="flex items-center gap-1.5">
+              <button id="btnSkipSlide" class="neo-btn neo-btn-yellow px-2 py-1 text-[10px]" title="Drawer can skip slide">
+                ⏭️ Skip Slide
+              </button>
+              <button id="btnZoomIn" class="neo-btn bg-white px-2 py-1 text-xs font-black" title="Zoom In">
+                +
+              </button>
+              <button id="btnZoomOut" class="neo-btn bg-white px-2 py-1 text-xs font-black" title="Zoom Out">
+                -
+              </button>
+              <button id="btnZoomReset" class="neo-btn bg-white px-2 py-1 text-xs" title="Reset View">
+                ⟲
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Slide Viewport -->
+          <div id="slideViewport" class="slide-viewport flex-1 relative min-h-[360px]">
+            <div id="slideContainer" class="slide-content-container">
+              <!-- Rendered dynamically by slide_viewer.js -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Bottom HUD: Leaderboard + Guessing Chat -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 h-48">
+        
+        <!-- Leaderboard (Cols 4) -->
+        <div class="lg:col-span-4 neo-box p-3 flex flex-col">
+          <div class="text-[11px] font-black uppercase text-gray-500 mb-1.5 flex items-center justify-between">
+            <span>Scoreboard</span>
+            <span>Pts</span>
+          </div>
+          <div id="playerLeaderboard" class="flex-1 overflow-y-auto pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Real-Time Guessing Chat & HUD (Cols 8) -->
+        <div class="lg:col-span-8 neo-box p-3 flex flex-col justify-between">
+          <!-- Chat Messages Area -->
+          <div id="chatMessages" class="flex-1 overflow-y-auto pr-1 space-y-1 mb-2">
+            <div class="text-xs font-semibold text-gray-400 text-center">Chat & guess the secret slide term here!</div>
+          </div>
+
+          <!-- Guess Input Box -->
+          <div class="flex items-center gap-2">
+            <input id="chatInput" type="text" placeholder="Type your guess here..." maxlength="40" class="neo-input flex-1 py-2 text-xs font-bold" />
+            <button id="btnSendChat" class="neo-btn neo-btn-primary px-4 py-2 text-xs">
+              Guess!
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: WORD SELECTION (Drawer only)        -->
+  <!-- ========================================== -->
+  <!-- ========================================== -->
+  <!-- MODAL: ROUND REVIEW                        -->
+  <!-- ========================================== -->
+  <div id="modalRoundReview" class="modal-overlay hidden">
+    <div class="neo-box-lg max-w-md w-full p-6 text-center bg-white">
+      <div class="text-3xl mb-1">🔔</div>
+      <h3 id="reviewReason" class="text-xl font-black text-gray-700 uppercase">Round Complete</h3>
+      <div class="my-3">
+        <div class="text-xs font-black uppercase text-gray-500">The Secret Word was:</div>
+        <div id="reviewSecretWord" class="text-3xl font-black text-[#FF4B82] uppercase tracking-widest mt-1">
+          BOOSTING
+        </div>
+      </div>
+      <div class="text-xs font-bold text-gray-600 mb-4">
+        Drawn by: <b id="reviewDrawerName">Scholar Cat</b>
+      </div>
+      <div class="text-sm font-black text-blue-600 bg-blue-50 py-2 rounded-lg border border-black">
+        Next round starting in <span id="reviewCountdown">5</span>s...
+      </div><div class="review-navigation"><button data-lobby class="neo-btn bg-white">← Back to lobby</button><button data-leave-room class="neo-btn bg-white">Leave room</button></div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: GAME OVER & PODIUM                  -->
+  <!-- ========================================== -->
+  <div id="modalGameOver" class="modal-overlay hidden">
+    <div class="neo-box-lg max-w-xl w-full p-6 bg-white text-center">
+      <h2 class="text-3xl font-black text-[#1E1E24] mb-1">🎓 Graduation Ceremony!</h2>
+      <p class="text-xs font-bold text-gray-600 mb-6">Congratulations to all study scholars!</p>
+
+      <!-- Animated Podium -->
+      <div id="podiumContainer" class="flex items-end justify-center gap-3 mb-6 min-h-[220px]">
+        <!-- 2nd, 1st, 3rd rendered dynamically -->
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-center gap-3">
+        <button data-lobby class="neo-btn neo-btn-mint px-4 py-2.5 text-xs">← Back to lobby</button><button data-leave-room class="neo-btn bg-white px-4 py-2.5 text-xs">Leave room</button>
+        <button id="btnPlayAgain" class="neo-btn neo-btn-primary px-4 py-2.5 text-xs">
+          🔄 Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: EXPORT STUDY GUIDE                  -->
+  <!-- ========================================== -->
+  <!-- ========================================== -->
+  <!-- MODAL: BEGINNER GUIDE "HOW TO DRAW"        -->
+  <!-- ========================================== -->
+  <div id="modalBeginnerGuide" class="modal-overlay hidden">
+    <div class="neo-box-lg max-w-2xl w-full p-6 bg-white">
+      <div class="flex items-center justify-between mb-4 border-b-2 border-black pb-2">
+        <div>
+          <h3 class="text-xl font-black text-[#1E1E24]">How to play ↗ Study Concepts</h3>
+          <p class="text-xs font-bold text-gray-600">Read → choose → draw → guess. Here’s what that looks like.</p>
+        </div>
+        <button id="btnCloseGuide" class="neo-btn bg-white px-2.5 py-1 text-xs">✕</button>
+      </div>
+
+<div class="how-steps"><span><b>1</b> Upload a PDF<br>or use the sample</span><span><b>2</b> Take 20 seconds<br>click a slide word</span><span><b>3</b> Draw the idea<br>friends guess it!</span></div><div class="guide-grid">
+<article><img src="/static/guide-rocket.svg" alt="A rocket rising through stages, representing boosting"/><h4>Boosting</h4><p>Small improvements lift you higher.</p></article>
+<article><img src="/static/guide-grid.svg" alt="A small filter sliding over a larger grid"/><h4>Convolution</h4><p>A small filter scans the big picture.</p></article>
+<article><img src="/static/guide-valley.svg" alt="A ball rolling down a valley toward its lowest point"/><h4>Gradient descent</h4><p>Roll downhill to find the lowest point.</p></article>
+<article><img src="/static/guide-light.svg" alt="A spotlight illuminating one word among several"/><h4>Attention</h4><p>Shine a light on what matters.</p></article>
+</div><p class="small-note">No word chosen in time? The turn passes. Skip a slide while choosing to get a fresh 20 seconds. Classic mode uses everyday words and needs no PDF.</p>
+    </div>
+  </div>
+
+  <div id="appStatus" role="status" aria-live="polite" class="app-status hidden"></div>
+  <!-- Scripts -->
+  <script src="/static/js/avatars.js"></script>
+  <script src="/static/js/canvas.js"></script>
+  <script src="/static/js/slide_viewer.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/upgrade.js"></script>
+</body>
+</html>
