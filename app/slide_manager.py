@@ -94,6 +94,13 @@ class SlideManager:
                 elif len(w) >= 4:
                     simple_candidates.append(w)
 
+            # If slide has no text (e.g. image, diagram, or visual PPT slide), provide smart candidate terms
+            if not word_boxes:
+                defaults = ["Diagram", "Architecture", "Overview", "Workflow", "System", "Process", "Component", "Structure"]
+                for idx, term in enumerate(defaults[:4]):
+                    word_boxes.append(WordBox(word=term, norm_box=[round(0.08 + idx * 0.22, 4), 0.85, round(0.26 + idx * 0.22, 4), 0.95], difficulty="simple" if idx % 2 == 0 else "challenging"))
+                    simple_candidates.append(term)
+
             # Ensure we have at least a few terms
             if not simple_candidates and challenging_candidates:
                 simple_candidates = challenging_candidates[:2]

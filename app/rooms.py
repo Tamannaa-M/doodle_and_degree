@@ -166,8 +166,8 @@ class GameRoom:
     async def update_pdf(self, pdf_path: str):
         manager = SlideManager()
         manager.load_pdf(pdf_path)
-        if not any(slide.word_boxes for slide in manager.slides):
-            raise ValueError("This PDF has no selectable text. Please use a text-based PDF, not scanned images.")
+        if not manager.slides:
+            raise ValueError("No slides could be read from this file.")
         self.current_pdf_path = pdf_path
         self.slide_manager = manager
         self.used_slide_indices.clear()
