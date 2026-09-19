@@ -55,6 +55,7 @@ class DoodleAndDegreeApp {
     // Host Settings
     this.selectDrawTime = document.getElementById('selectDrawTime');
     this.selectRounds = document.getElementById('selectRounds');
+    this.selectClassicCategory = document.getElementById('selectClassicCategory');
     this.hostSettingsBox = document.getElementById('hostSettingsBox');
     this.pdfDropzone = document.getElementById('pdfDropzone');
     this.pdfFileInput = document.getElementById('pdfFileInput');
@@ -370,6 +371,7 @@ class DoodleAndDegreeApp {
       const form = new FormData();
       form.append('host_id', this.playerId);
       form.append('mode', this.mode);
+      form.append('classic_category', this.selectClassicCategory?.value || 'general');
       form.append('draw_time', this.selectDrawTime.value);
       form.append('total_rounds', this.selectRounds.value);
       const res = await fetch('/api/rooms', {method:'POST', body:form});
@@ -385,6 +387,7 @@ class DoodleAndDegreeApp {
   async handlePdfUpload(file) {
     if (this.uploading) return;
     if (!file || !file.name.toLowerCase().endsWith('.pdf')) { this.status('Please choose a PDF file.'); return; }
+    if (file.size > 35 * 1024 * 1024) { this.status('Please choose a file smaller than 35MB.'); return; }
     this.uploading = true;
     this.btnStartGame.disabled = true;
     try {
@@ -428,7 +431,7 @@ class DoodleAndDegreeApp {
     window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js';
     const documentTask = window.pdfjsLib.getDocument({data: await file.arrayBuffer()});
     const pdf = await documentTask.promise;
-    if (pdf.numPages > 120) throw new Error('Please use a presentation with 120 slides or fewer.');
+    if (pdf.numPages > 250) throw new Error('Please use a presentation with 250 slides or fewer.');
     const stop = new Set('the and for that this with from have are which using where into their will what when more such each then them some other about slide study terms between across while these there those'.split(' '));
     const technical = new Set('perceptron activation gradient descent backpropagation weights overfitting sigmoid softmax decision tree ensemble boosting forest entropy residuals variance convolution kernel pooling filter invariance pixels tensors transformer attention tokenizer embedding tokens encoder decoder policy reward exploration environment state action discount neural network vectors architecture workflow pipeline analysis component structure algorithm function parameter benchmark optimization'.split(' '));
     const slides = [];
@@ -596,6 +599,7 @@ class DoodleAndDegreeApp {
         this.refreshMode();
         if (this.selectDrawTime) this.selectDrawTime.value = msg.draw_time;
         if (this.selectRounds) this.selectRounds.value = msg.total_rounds;
+        if (this.selectClassicCategory && msg.classic_category) this.selectClassicCategory.value = msg.classic_category;
         this.addSystemChatMessage(`⚙️ Host updated settings: ${msg.draw_time}s draw time, ${msg.total_rounds} rounds.`);
         break;
 
@@ -763,6 +767,7 @@ class DoodleAndDegreeApp {
     this.mode = state.mode;
     this.selectDrawTime.value = state.draw_time;
     this.selectRounds.value = state.total_rounds;
+    if (this.selectClassicCategory && state.classic_category) this.selectClassicCategory.value = state.classic_category;
     this.isHost = (this.playerId === state.host_id);
     this.refreshMode();
     this.btnStartGame.disabled = !this.isHost || this.uploading;
@@ -968,14 +973,19 @@ class DoodleAndDegreeApp {
 
   addChatMessage(msg) {
     const item = document.createElement('div');
-    item.className = 'flex items-start gap-2 mb-2 text-xs';
+    const isMe = msg.sender_id === this.playerId;
+    item.className = `flex items-start gap-1.5 text-xs py-0.5 ${
+      msg.is_correct ? 'font-black text-green-700 bg-green-100 p-1 rounded' : ''
+    }`;
+
     item.innerHTML = `
-      <div class="w-6 h-6 flex-shrink-0">${getAvatarSvg(msg.avatar, 24)}</div>
-      <div class="speech-bubble max-w-[85%]">
-        <span class="font-extrabold text-blue-700">${escapeHtml(msg.sender_name)}:</span>
-        <span class="font-medium text-black break-words ml-1">${escapeHtml(msg.text)}</span>
+      <div class="w-4 h-4 flex-shrink-0 mt-0.5">${getAvatarSvg(msg.avatar, 16)}</div>
+      <div>
+        <span class="font-extrabold ${isMe ? 'text-pink-600' : 'text-gray-800'}">${escapeHtml(msg.sender_name)}:</span>
+        <span class="font-medium text-gray-900">${escapeHtml(msg.text)}</span>
       </div>
     `;
+
     this.chatMessages.appendChild(item);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
   }
@@ -1026,6 +1036,15 @@ class DoodleAndDegreeApp {
   showGameOverModal(podium) {
     document.getElementById('btnPlayAgain').disabled = !this.isHost;
     document.getElementById('btnPlayAgain').textContent = this.isHost ? 'Play again' : 'Waiting for host to play again';
+    const titleEl = document.getElementById('gameOverTitle');
+    const subEl = document.getElementById('gameOverSubtitle');
+    if (this.mode === 'study') {
+      if (titleEl) titleEl.textContent = '🎓 Graduation Ceremony!';
+      if (subEl) subEl.textContent = 'Congratulations to all study scholars!';
+    } else {
+      if (titleEl) titleEl.textContent = '🏆 Game Over · Final Podium!';
+      if (subEl) subEl.textContent = 'Great drawings and legendary guesses!';
+    }
     this.modalGameOver.classList.remove('hidden');
     const container = document.getElementById('podiumContainer');
 

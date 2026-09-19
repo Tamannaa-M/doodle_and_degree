@@ -136,6 +136,26 @@ class TurnTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('boundary',hint)
         self.assertNotIn('As Machine',hint)
 
+    async def test_classic_category_selection_and_no_repeats(self):
+        self.room.mode = 'classic'
+        self.room.classic_category = 'animals'
+        await self.room.begin_selection()
+        options1 = list(self.room.word_options)
+        self.assertEqual(len(options1), 3)
+        # All options belong to the animals category
+        from app.rooms import CLASSIC_CATEGORIES
+        for opt in options1:
+            self.assertIn(opt, CLASSIC_CATEGORIES['animals'])
+        # Pick first option
+        chosen = options1[0]
+        await self.room.set_secret_word('a', chosen)
+        self.assertIn(chosen, self.room.used_classic_words)
+
+        # Start next selection
+        await self.room.begin_selection()
+        options2 = self.room.word_options
+        self.assertNotIn(chosen, options2)
+
 class UploadTests(unittest.TestCase):
     def test_upload_permissions_repeat_and_bad_pdf_keeps_deck(self):
         with TestClient(app) as client:
@@ -151,3 +171,4 @@ class UploadTests(unittest.TestCase):
             self.assertIs(room_manager.get_room(code).slide_manager,old)
 
 if __name__=='__main__': unittest.main()
+

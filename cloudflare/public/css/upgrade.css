@@ -28,3 +28,17 @@ body{background-color:#e4def8;background-image:radial-gradient(circle at 12% 18%
 #slideViewport{background:#d5d3ef}
 #roleLabel{color:#44385f}
 @media(max-width:540px){.game-navigation{flex-direction:column;align-items:stretch}.game-navigation>div{justify-content:space-between}#gameHud{top:4px;gap:6px}.word-readout{order:3;flex-basis:100%}#hudWordMeta{font-size:10px}#hudWordBlanks{gap:2px}body>header>div{flex-wrap:wrap;gap:10px}header .neo-btn{font-size:9px!important} .review-navigation{flex-wrap:wrap}}
+@media(max-width:768px){
+  #viewGame{gap:8px}
+  #viewGame .game-board{min-height:unset!important;display:grid;grid-template-columns:1fr;gap:8px}
+  body[data-mode="study"] #viewGame .game-board{grid-template-columns:1fr 1fr!important;gap:6px}
+  .canvas-wrapper{min-height:200px!important;height:36vh;max-height:300px}
+  #slideViewport{min-height:200px!important;height:36vh;max-height:300px}
+  #drawerToolbar{padding:4px;gap:4px}
+  .color-palette-grid{gap:2px}
+  .color-swatch{width:14px;height:14px}
+  #viewGame>.grid:last-of-type{display:flex;flex-direction:column-reverse;height:auto!important;gap:6px}
+  #chatMessages{max-height:100px;min-height:55px}
+  #playerLeaderboard{max-height:65px;display:flex;flex-wrap:wrap;gap:4px}
+  #playerLeaderboard .player-item{margin-bottom:0;padding:2px 6px}
+}

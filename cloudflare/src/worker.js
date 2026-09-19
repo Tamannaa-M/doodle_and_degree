@@ -1,4 +1,64 @@
-const CLASSIC_WORDS = "Cat Dog Rocket Pizza Umbrella Bicycle Castle Rainbow Robot Guitar Penguin Butterfly Volcano Mermaid Lighthouse Snowman Dinosaur Popcorn Camera Octopus Balloon Airplane Turtle Dragon Waterfall Sandwich Sunflower Skateboard Pirate Telescope".split(" ");
+const CLASSIC_CATEGORIES = {
+  general: [
+    "Cat", "Dog", "Rocket", "Pizza", "Umbrella", "Bicycle", "Castle", "Rainbow", "Robot", "Guitar",
+    "Penguin", "Butterfly", "Volcano", "Mermaid", "Lighthouse", "Snowman", "Dinosaur", "Popcorn", "Camera", "Octopus",
+    "Balloon", "Airplane", "Turtle", "Dragon", "Waterfall", "Sandwich", "Sunflower", "Skateboard", "Pirate", "Telescope",
+    "Helicopter", "Submarine", "Spaceship", "Satellite", "Campfire", "Diamond", "Treasure", "Crown", "Anchor", "Compass",
+    "Microscope", "Binoculars", "Flamingo", "Chameleon", "Kangaroo", "Dolphin", "Cheetah", "Peacock", "Gorilla", "Koala",
+    "Burger", "Sushi", "Taco", "Pancake", "Waffle", "Donut", "Ice Cream", "Cupcake", "Cookie", "Avocado",
+    "Watermelon", "Pineapple", "Strawberry", "Cherry", "Banana", "Apple", "Coffee", "Boba Tea", "Milkshake", "Chocolate",
+    "Surfing", "Skiing", "Dancing", "Juggling", "Camping", "Fishing", "Bowling", "Karate", "Archery", "Painting",
+    "Knight", "Astronaut", "Wizard", "Superhero", "Detective", "Ninja", "Chef", "Doctor", "Firefighter", "Pilot",
+    "Ghost", "Alien", "Monster", "Unicorn", "Phoenix", "Mummy", "Vampire", "Tornado", "Lightning", "Earthquake",
+    "Island", "Pyramid", "Bridge", "Windmill", "Igloo", "Statue", "Ferris Wheel", "Rollercoaster", "Hot Air Balloon", "Parachute"
+  ],
+  animals: [
+    "Cat", "Dog", "Elephant", "Giraffe", "Penguin", "Dolphin", "Lion", "Tiger", "Kangaroo", "Chameleon",
+    "Octopus", "Owl", "Rabbit", "Hamster", "Cheetah", "Panda", "Koala", "Monkey", "Gorilla", "Zebra",
+    "Hippo", "Rhino", "Camel", "Llama", "Flamingo", "Peacock", "Parrot", "Toucan", "Eagle", "Hawk",
+    "Bat", "Squirrel", "Beaver", "Hedgehog", "Fox", "Wolf", "Bear", "Polar Bear", "Seal", "Walrus",
+    "Whale", "Shark", "Jellyfish", "Seahorse", "Starfish", "Crab", "Lobster", "Turtle", "Frog", "Snake",
+    "Crocodile", "Lizard", "Dinosaur", "Dragon", "Butterfly", "Bee", "Ant", "Spider", "Scorpion", "Snail",
+    "Ladybug", "Dragonfly", "Grasshopper", "Caterpillar", "Duck", "Swan", "Goose", "Chicken", "Rooster", "Turkey",
+    "Ostrich", "Sheep", "Goat", "Cow", "Bull", "Horse", "Donkey", "Pig", "Deer", "Moose",
+    "Sloth", "Otter", "Badger", "Raccoon", "Skunk", "Platypus", "Pelican", "Woodpecker", "Seagull", "Pigeon",
+    "Goldfish", "Swordfish", "Stingray", "Eel", "Squid", "Clam", "Shrimp", "Meerkat", "Lemur", "Hyena",
+    "Wombat", "Armadillo", "Porcupine", "Jaguar", "Leopard", "Panther", "Gazelle", "Piranha", "Manta Ray", "Crow"
+  ],
+  food: [
+    "Pizza", "Burger", "Taco", "Burrito", "Sushi", "Hot Dog", "Sandwich", "Pancake", "Waffle", "Donut",
+    "Ice Cream", "Cupcake", "Cookie", "Popcorn", "French Fries", "Spaghetti", "Noodles", "Ramen", "Dumpling", "Croissant",
+    "Baguette", "Pretzel", "Bagel", "Toast", "Cheese", "Egg", "Bacon", "Sausage", "Steak", "Chicken Wing",
+    "Salad", "Soup", "Avocado", "Tomato", "Potato", "Carrot", "Broccoli", "Corn", "Mushroom", "Onion",
+    "Garlic", "Pepper", "Cucumber", "Pumpkin", "Apple", "Banana", "Orange", "Strawberry", "Watermelon", "Pineapple",
+    "Grapes", "Mango", "Peach", "Cherry", "Lemon", "Lime", "Blueberry", "Kiwi", "Coconut", "Papaya",
+    "Cake", "Pie", "Brownie", "Muffin", "Chocolate", "Candy", "Lollipop", "Marshmallow", "Milkshake", "Smoothie",
+    "Coffee", "Tea", "Juice", "Soda", "Boba Tea", "Nachos", "Quesadilla", "Lasagna", "Meatball", "Kebab",
+    "Curry", "Rice Bowl", "Churro", "Cotton Candy", "Fondue", "Popsicle", "Pudding", "Sundae", "Tart", "Crepe"
+  ],
+  objects: [
+    "Rocket", "Telescope", "Bicycle", "Umbrella", "Castle", "Robot", "Guitar", "Camera", "Balloon", "Airplane",
+    "Skateboard", "Lighthouse", "Snowman", "Helicopter", "Submarine", "Sailboat", "Train", "Truck", "Car", "Motorcycle",
+    "Scooter", "Bus", "Tractor", "Ambulance", "Fire Truck", "Police Car", "Spaceship", "Satellite", "Compass", "Map",
+    "Backpack", "Suitcase", "Clock", "Hourglass", "Watch", "Flashlight", "Lantern", "Candle", "Lamp", "Lightbulb",
+    "Mirror", "Key", "Lock", "Padlock", "Scissors", "Hammer", "Wrench", "Screwdriver", "Axe", "Shovel",
+    "Broom", "Bucket", "Ladder", "Anchor", "Wheelbarrow", "Microscope", "Binoculars", "Magnifying Glass", "Globe", "Book",
+    "Notebook", "Envelope", "Paintbrush", "Palette", "Easel", "Piano", "Drums", "Violin", "Trumpet", "Saxophone",
+    "Microphone", "Headphones", "Radio", "Television", "Computer", "Laptop", "Smartphone", "Game Controller", "Crown", "Ring",
+    "Necklace", "Glasses", "Sunglasses", "Hat", "Helmet", "Boots", "Trophy", "Medal", "Flag", "Treasure Chest",
+    "Sword", "Shield", "Bow and Arrow", "Boomerang", "Kite", "Yo-yo", "Teddy Bear", "Tent", "Campfire", "Igloo"
+  ],
+  activities: [
+    "Surfing", "Skateboarding", "Skiing", "Snowboarding", "Swimming", "Diving", "Fishing", "Camping", "Hiking", "Climbing",
+    "Running", "Jogging", "Cycling", "Dancing", "Singing", "Juggling", "Cooking", "Baking", "Painting", "Drawing",
+    "Reading", "Writing", "Gardening", "Knitting", "Sewing", "Photography", "Gaming", "Bowling", "Archery", "Fencing",
+    "Boxing", "Karate", "Yoga", "Gymnastics", "Ballet", "Magic Show", "Skydiving", "Scuba Diving", "Kayaking", "Canoeing",
+    "Rowing", "Sailing", "Ice Skating", "Roller Skating", "Horse Riding", "Dog Walking", "Bird Watching", "Stargazing", "Sunbathing", "Shopping",
+    "Flying a Kite", "Building a Sandcastle", "Playing Guitar", "Playing Drums", "Playing Piano", "Playing Chess", "Playing Soccer", "Playing Basketball", "Playing Tennis", "Playing Golf"
+  ]
+};
+
+const CLASSIC_WORDS = CLASSIC_CATEGORIES.general;
 
 const json = (value, status = 200) => new Response(JSON.stringify(value), {
   status,
@@ -18,7 +78,7 @@ function blankState() {
     phase: "LOBBY", players: {}, playerOrder: [], drawerIndex: 0, drawerId: null,
     currentWord: "", wordOptions: [], revealed: [], strokes: [], currentSlideIndex: 0,
     usedSlides: [], totalSlides: 0, pdfName: "ML Lecture Slides", deadline: 0,
-    hintBroadcasted: false, studyPairs: []
+    hintBroadcasted: false, studyPairs: [], classicCategory: "general", usedClassicWords: []
   };
 }
 
@@ -120,7 +180,7 @@ export class GameRoom {
   async roomState(playerId) {
     const slide = this.room.mode === "study" ? await this.getSlide() : null;
     return {
-      code: this.room.code, mode: this.room.mode,
+      code: this.room.code, mode: this.room.mode, classic_category: this.room.classicCategory || "general",
       word_options: playerId === this.room.drawerId ? this.room.wordOptions : [], state: this.room.phase,
       host_id: this.room.hostId, draw_time: this.room.drawTime, total_rounds: this.room.totalRounds,
       current_round: this.room.currentRound, drawer_id: this.room.drawerId,
@@ -140,6 +200,7 @@ export class GameRoom {
         const body = await request.json();
         Object.assign(this.room, blankState(), { initialized: true, code: body.code, hostId: body.host_id,
           mode: ["classic","study"].includes(body.mode) ? body.mode : "study",
+          classicCategory: body.classic_category && CLASSIC_CATEGORIES[body.classic_category] ? body.classic_category : "general",
           drawTime: Math.max(30, Math.min(180, Number(body.draw_time) || 120)),
           totalRounds: Math.max(1, Math.min(10, Number(body.total_rounds) || 3)) });
         await this.replaceSlides(body.slides, "ML Lecture Slides");
@@ -149,7 +210,8 @@ export class GameRoom {
     if (!this.room.initialized) return json({ detail: "Room not found" }, 404);
     if (url.pathname === "/info") return json({ code: this.room.code, state: this.room.phase,
       player_count: this.connectedIds().size, host_id: this.room.hostId, draw_time: this.room.drawTime,
-      total_rounds: this.room.totalRounds, total_slides: this.room.totalSlides, pdf_name: this.room.pdfName });
+      total_rounds: this.room.totalRounds, total_slides: this.room.totalSlides, pdf_name: this.room.pdfName,
+      classic_category: this.room.classicCategory || "general" });
     if (url.pathname === "/slides" && request.method === "POST") {
       const body = await request.json();
       if (body.player_id !== this.room.hostId) return json({ detail: "Only the host can upload slides" }, 403);
@@ -185,9 +247,10 @@ export class GameRoom {
     if (type === "profile" && this.room.phase === "LOBBY") this.room.players[playerId].avatar = String(data.avatar || "cat").slice(0,80);
     else if (type === "update_settings" && playerId === this.room.hostId && this.room.phase === "LOBBY") {
       this.room.mode = ["classic","study"].includes(data.mode) ? data.mode : "study";
+      if (data.classic_category && CLASSIC_CATEGORIES[data.classic_category]) this.room.classicCategory = data.classic_category;
       this.room.drawTime = Math.max(30, Math.min(180, Number(data.draw_time) || 120));
       this.room.totalRounds = Math.max(1, Math.min(10, Number(data.total_rounds) || 3));
-      this.broadcast({ type: "settings_updated", mode: this.room.mode, draw_time: this.room.drawTime, total_rounds: this.room.totalRounds });
+      this.broadcast({ type: "settings_updated", mode: this.room.mode, classic_category: this.room.classicCategory, draw_time: this.room.drawTime, total_rounds: this.room.totalRounds });
     } else if (type === "return_to_lobby" && playerId === this.room.hostId) await this.returnToLobby();
     else if (type === "leave_room") ws.close(1000, "Left room");
     else if (type === "start_game") await this.startGame(playerId);
@@ -228,21 +291,27 @@ export class GameRoom {
   async startGame(playerId) {
     if (playerId !== this.room.hostId || !["LOBBY","GAME_OVER"].includes(this.room.phase)) return;
     this.room.currentRound = 1; this.room.drawerIndex = 0; this.room.studyPairs = [];
+    this.room.usedClassicWords = [];
     this.room.playerOrder = [...this.connectedIds()];
     for (const p of Object.values(this.room.players)) { p.score = 0; p.has_guessed = false; p.is_drawing = false; }
     await this.nextTurn();
   }
 
   async nextTurn() {
-    const online = this.connectedIds();
-    if (!online.size) { this.room.phase = "LOBBY"; return; }
-    while (this.room.drawerIndex >= this.room.playerOrder.length) { this.room.drawerIndex = 0; this.room.currentRound++; }
-    if (this.room.currentRound > this.room.totalRounds) return this.endGame();
-    let attempts = 0;
-    while (!online.has(this.room.playerOrder[this.room.drawerIndex]) && attempts++ <= this.room.playerOrder.length) {
-      this.room.drawerIndex++; if (this.room.drawerIndex >= this.room.playerOrder.length) { this.room.drawerIndex = 0; this.room.currentRound++; }
-      if (this.room.currentRound > this.room.totalRounds) return this.endGame();
+    const online = [...this.connectedIds()];
+    if (!online.length) { this.room.phase = "LOBBY"; await this.save(); return; }
+    for (const id of online) {
+      if (!this.room.playerOrder.includes(id)) this.room.playerOrder.push(id);
     }
+    this.room.playerOrder = this.room.playerOrder.filter(id => online.includes(id));
+    if (!this.room.playerOrder.length) this.room.playerOrder = [...online];
+
+    if (this.room.drawerIndex >= this.room.playerOrder.length) {
+      this.room.drawerIndex = 0;
+      this.room.currentRound++;
+    }
+    if (this.room.currentRound > this.room.totalRounds) return this.endGame();
+
     this.room.drawerId = this.room.playerOrder[this.room.drawerIndex++];
     for (const p of Object.values(this.room.players)) { p.has_guessed = false; p.is_drawing = p.id === this.room.drawerId; }
     Object.assign(this.room, { strokes: [], currentWord: "", revealed: [], hintBroadcasted: false, phase: "WORD_SELECTION" });
@@ -258,7 +327,19 @@ export class GameRoom {
 
   async beginSelection() {
     this.room.currentSlideIndex = this.nextSlideIndex();
-    this.room.wordOptions = this.room.mode === "classic" ? sample(CLASSIC_WORDS, 3) : [];
+    if (this.room.mode === "classic") {
+      const cat = this.room.classicCategory || "general";
+      const pool = CLASSIC_CATEGORIES[cat] || CLASSIC_CATEGORIES.general;
+      if (!Array.isArray(this.room.usedClassicWords)) this.room.usedClassicWords = [];
+      let available = pool.filter(w => !this.room.usedClassicWords.includes(w));
+      if (available.length < 3) {
+        this.room.usedClassicWords = [];
+        available = [...pool];
+      }
+      this.room.wordOptions = sample(available, 3);
+    } else {
+      this.room.wordOptions = [];
+    }
     this.room.deadline = Date.now() + this.room.selectionTime * 1000;
     const slide = this.room.mode === "study" ? await this.getSlide() : null;
     const common = { slide, mode: this.room.mode, time_limit: this.room.selectionTime, round: this.room.currentRound,
@@ -274,6 +355,10 @@ export class GameRoom {
     const allowed = this.room.mode === "classic" ? this.room.wordOptions : (slide?.word_boxes || []).map(x => x.word);
     const match = allowed.find(x => x.toLowerCase() === word.toLowerCase());
     if (!match) return this.sendTo(playerId, { type: "error", message: this.room.mode === "study" ? "Choose a highlighted word on the current slide." : "Choose one of the three words." });
+    if (this.room.mode === "classic") {
+      if (!Array.isArray(this.room.usedClassicWords)) this.room.usedClassicWords = [];
+      if (!this.room.usedClassicWords.includes(match)) this.room.usedClassicWords.push(match);
+    }
     Object.assign(this.room, { currentWord: match, phase: "DRAWING", deadline: Date.now() + this.room.drawTime*1000, revealed: [], hintBroadcasted: false });
     const masked = this.maskedWord(), lengths = this.wordLengths();
     this.sendTo(this.room.drawerId, { type: "drawing_started_drawer", word: match, masked_word: masked, word_lengths: lengths,
@@ -357,8 +442,8 @@ export default {
       const slidesResponse = await env.ASSETS.fetch(new Request(new URL("/default-slides.json", url)));
       const slides = await slidesResponse.json(); const id = env.ROOMS.idFromName(code), stub = env.ROOMS.get(id);
       const payload = { code, host_id: form.get("host_id") || `host_${crypto.randomUUID().slice(0,8)}`,
-        mode: form.get("mode") || "study", draw_time:Number(form.get("draw_time"))||120,
-        total_rounds:Number(form.get("total_rounds"))||3, slides };
+        mode: form.get("mode") || "study", classic_category: form.get("classic_category") || "general",
+        draw_time:Number(form.get("draw_time"))||120, total_rounds:Number(form.get("total_rounds"))||3, slides };
       await stub.fetch("https://room/init", { method:"POST", body:JSON.stringify(payload) });
       return json({ code, host_id:payload.host_id, total_slides:slides.length, pdf_name:"ML Lecture Slides" });
     }

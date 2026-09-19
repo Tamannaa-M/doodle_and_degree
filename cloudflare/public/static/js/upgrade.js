@@ -47,7 +47,10 @@ DoodleAndDegreeApp.prototype.refreshMode = function() {
     btn.setAttribute('aria-pressed',String(btn.dataset.mode===this.mode));
     btn.disabled=Boolean(this.roomCode && !this.isHost);
   });
-  document.getElementById('studyUpload').hidden=this.mode==='classic';
+  const catRow = document.getElementById('classicCategoryRow');
+  if (catRow) catRow.classList.toggle('hidden', this.mode !== 'classic');
+  const studyUpload = document.getElementById('studyUpload');
+  if (studyUpload) studyUpload.hidden=(this.mode==='classic');
   document.getElementById('btnCopyInvite').disabled=!this.roomCode;
 };
 DoodleAndDegreeApp.prototype.initNewControls = function() {
@@ -66,8 +69,23 @@ DoodleAndDegreeApp.prototype.initNewControls = function() {
   document.querySelectorAll('.mode-card').forEach(btn=>btn.onclick=()=>{
     if(this.roomCode && !this.isHost) return;
     this.mode=btn.dataset.mode; this.refreshMode();
-    if(this.ws?.readyState===WebSocket.OPEN) this.ws.send(JSON.stringify({type:'update_settings',mode:this.mode,draw_time:Number(this.selectDrawTime.value),total_rounds:Number(this.selectRounds.value)}));
+    const catVal = document.getElementById('selectClassicCategory')?.value || 'general';
+    if(this.ws?.readyState===WebSocket.OPEN) this.ws.send(JSON.stringify({type:'update_settings',mode:this.mode,classic_category:catVal,draw_time:Number(this.selectDrawTime.value),total_rounds:Number(this.selectRounds.value)}));
   });
+  const catSelect = document.getElementById('selectClassicCategory');
+  if (catSelect) {
+    catSelect.addEventListener('change', () => {
+      if (this.isHost && this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({
+          type: 'update_settings',
+          mode: this.mode,
+          classic_category: catSelect.value,
+          draw_time: Number(this.selectDrawTime.value),
+          total_rounds: Number(this.selectRounds.value)
+        }));
+      }
+    });
+  }
   this.pdfDropzone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();this.pdfFileInput.click();}});
   this.modalBeginnerGuide.addEventListener('click',e=>{if(e.target===this.modalBeginnerGuide)this.modalBeginnerGuide.classList.add('hidden');});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')this.modalBeginnerGuide.classList.add('hidden');});

@@ -91,6 +91,7 @@
   <div class="mode-grid"><button class="mode-card selected" data-mode="study"><span class="mode-icon">✎</span><strong>Study & scribble</strong><small>Your slides. Your words.<br>Accidental revision.</small></button><button class="mode-card" data-mode="classic"><span class="mode-icon">✦</span><strong>Classic pictionary</strong><small>Everyday words.<br>Extraordinary bad art.</small></button></div>
   <div id="hostSettingsBox">
     <div class="settings-row"><label>DRAW TIME<select id="selectDrawTime" class="neo-input"><option value="60">60 seconds</option><option value="90">90 seconds</option><option value="120" selected>120 seconds</option><option value="150">150 seconds</option><option value="180">180 seconds</option></select></label><label>ROUNDS<select id="selectRounds" class="neo-input"><option value="1">1 round</option><option value="2">2 rounds</option><option value="3" selected>3 rounds</option><option value="5">5 rounds</option></select></label></div>
+    <div id="classicCategoryRow" class="settings-row hidden" style="grid-template-columns:1fr;"><label>WORD CATEGORY<select id="selectClassicCategory" class="neo-input"><option value="general" selected>✨ General Mix (Animals, Food, Objects, Fun)</option><option value="animals">🦁 Animals & Birds</option><option value="food">🍕 Food & Treats</option><option value="objects">🚀 Objects & Tools</option><option value="activities">🏄 Activities & Hobbies</option></select></label></div>
     <div id="studyUpload"><div id="pdfDropzone" tabindex="0" role="button" aria-label="Upload lecture PDF"><span class="upload-icon">↥</span><div><strong>Drop your lecture PDF here</strong><small>or click to browse · we’ll create your room for you</small></div><input id="pdfFileInput" type="file" accept=".pdf" hidden/></div><div id="slideDeckInfo">Try the included 5-slide sample, or bring your own.</div></div>
   </div>
   <div id="roomStatus" class="room-status">YOUR NEXT GREAT DOODLE STARTS HERE</div>
@@ -306,8 +307,8 @@
   <!-- ========================================== -->
   <div id="modalGameOver" class="modal-overlay hidden">
     <div class="neo-box-lg max-w-xl w-full p-6 bg-white text-center">
-      <h2 class="text-3xl font-black text-[#1E1E24] mb-1">🎓 Graduation Ceremony!</h2>
-      <p class="text-xs font-bold text-gray-600 mb-6">Congratulations to all study scholars!</p>
+      <h2 id="gameOverTitle" class="text-3xl font-black text-[#1E1E24] mb-1">🎓 Graduation Ceremony!</h2>
+      <p id="gameOverSubtitle" class="text-xs font-bold text-gray-600 mb-6">Congratulations to all study scholars!</p>
 
       <!-- Animated Podium -->
       <div id="podiumContainer" class="flex items-end justify-center gap-3 mb-6 min-h-[220px]">

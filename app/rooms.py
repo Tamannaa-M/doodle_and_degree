@@ -45,7 +45,67 @@ def is_close_guess(guess: str, target: str) -> bool:
     else:
         return dist <= 3
 
-CLASSIC_WORDS = "Cat Dog Rocket Pizza Umbrella Bicycle Castle Rainbow Robot Guitar Penguin Butterfly Volcano Mermaid Lighthouse Snowman Dinosaur Popcorn Camera Octopus Balloon Airplane Turtle Dragon Waterfall Sandwich Sunflower Skateboard Pirate Telescope".split()
+CLASSIC_CATEGORIES = {
+    "general": [
+        "Cat", "Dog", "Rocket", "Pizza", "Umbrella", "Bicycle", "Castle", "Rainbow", "Robot", "Guitar",
+        "Penguin", "Butterfly", "Volcano", "Mermaid", "Lighthouse", "Snowman", "Dinosaur", "Popcorn", "Camera", "Octopus",
+        "Balloon", "Airplane", "Turtle", "Dragon", "Waterfall", "Sandwich", "Sunflower", "Skateboard", "Pirate", "Telescope",
+        "Helicopter", "Submarine", "Spaceship", "Satellite", "Campfire", "Diamond", "Treasure", "Crown", "Anchor", "Compass",
+        "Microscope", "Binoculars", "Flamingo", "Chameleon", "Kangaroo", "Dolphin", "Cheetah", "Peacock", "Gorilla", "Koala",
+        "Burger", "Sushi", "Taco", "Pancake", "Waffle", "Donut", "Ice Cream", "Cupcake", "Cookie", "Avocado",
+        "Watermelon", "Pineapple", "Strawberry", "Cherry", "Banana", "Apple", "Coffee", "Boba Tea", "Milkshake", "Chocolate",
+        "Surfing", "Skiing", "Dancing", "Juggling", "Camping", "Fishing", "Bowling", "Karate", "Archery", "Painting",
+        "Knight", "Astronaut", "Wizard", "Superhero", "Detective", "Ninja", "Chef", "Doctor", "Firefighter", "Pilot",
+        "Ghost", "Alien", "Monster", "Unicorn", "Phoenix", "Mummy", "Vampire", "Tornado", "Lightning", "Earthquake",
+        "Island", "Pyramid", "Bridge", "Windmill", "Igloo", "Statue", "Ferris Wheel", "Rollercoaster", "Hot Air Balloon", "Parachute"
+    ],
+    "animals": [
+        "Cat", "Dog", "Elephant", "Giraffe", "Penguin", "Dolphin", "Lion", "Tiger", "Kangaroo", "Chameleon",
+        "Octopus", "Owl", "Rabbit", "Hamster", "Cheetah", "Panda", "Koala", "Monkey", "Gorilla", "Zebra",
+        "Hippo", "Rhino", "Camel", "Llama", "Flamingo", "Peacock", "Parrot", "Toucan", "Eagle", "Hawk",
+        "Bat", "Squirrel", "Beaver", "Hedgehog", "Fox", "Wolf", "Bear", "Polar Bear", "Seal", "Walrus",
+        "Whale", "Shark", "Jellyfish", "Seahorse", "Starfish", "Crab", "Lobster", "Turtle", "Frog", "Snake",
+        "Crocodile", "Lizard", "Dinosaur", "Dragon", "Butterfly", "Bee", "Ant", "Spider", "Scorpion", "Snail",
+        "Ladybug", "Dragonfly", "Grasshopper", "Caterpillar", "Duck", "Swan", "Goose", "Chicken", "Rooster", "Turkey",
+        "Ostrich", "Sheep", "Goat", "Cow", "Bull", "Horse", "Donkey", "Pig", "Deer", "Moose",
+        "Sloth", "Otter", "Badger", "Raccoon", "Skunk", "Platypus", "Pelican", "Woodpecker", "Seagull", "Pigeon",
+        "Goldfish", "Swordfish", "Stingray", "Eel", "Squid", "Clam", "Shrimp", "Meerkat", "Lemur", "Hyena",
+        "Wombat", "Armadillo", "Porcupine", "Jaguar", "Leopard", "Panther", "Gazelle", "Piranha", "Manta Ray", "Crow"
+    ],
+    "food": [
+        "Pizza", "Burger", "Taco", "Burrito", "Sushi", "Hot Dog", "Sandwich", "Pancake", "Waffle", "Donut",
+        "Ice Cream", "Cupcake", "Cookie", "Popcorn", "French Fries", "Spaghetti", "Noodles", "Ramen", "Dumpling", "Croissant",
+        "Baguette", "Pretzel", "Bagel", "Toast", "Cheese", "Egg", "Bacon", "Sausage", "Steak", "Chicken Wing",
+        "Salad", "Soup", "Avocado", "Tomato", "Potato", "Carrot", "Broccoli", "Corn", "Mushroom", "Onion",
+        "Garlic", "Pepper", "Cucumber", "Pumpkin", "Apple", "Banana", "Orange", "Strawberry", "Watermelon", "Pineapple",
+        "Grapes", "Mango", "Peach", "Cherry", "Lemon", "Lime", "Blueberry", "Kiwi", "Coconut", "Papaya",
+        "Cake", "Pie", "Brownie", "Muffin", "Chocolate", "Candy", "Lollipop", "Marshmallow", "Milkshake", "Smoothie",
+        "Coffee", "Tea", "Juice", "Soda", "Boba Tea", "Nachos", "Quesadilla", "Lasagna", "Meatball", "Kebab",
+        "Curry", "Rice Bowl", "Churro", "Cotton Candy", "Fondue", "Popsicle", "Pudding", "Sundae", "Tart", "Crepe"
+    ],
+    "objects": [
+        "Rocket", "Telescope", "Bicycle", "Umbrella", "Castle", "Robot", "Guitar", "Camera", "Balloon", "Airplane",
+        "Skateboard", "Lighthouse", "Snowman", "Helicopter", "Submarine", "Sailboat", "Train", "Truck", "Car", "Motorcycle",
+        "Scooter", "Bus", "Tractor", "Ambulance", "Fire Truck", "Police Car", "Spaceship", "Satellite", "Compass", "Map",
+        "Backpack", "Suitcase", "Clock", "Hourglass", "Watch", "Flashlight", "Lantern", "Candle", "Lamp", "Lightbulb",
+        "Mirror", "Key", "Lock", "Padlock", "Scissors", "Hammer", "Wrench", "Screwdriver", "Axe", "Shovel",
+        "Broom", "Bucket", "Ladder", "Anchor", "Wheelbarrow", "Microscope", "Binoculars", "Magnifying Glass", "Globe", "Book",
+        "Notebook", "Envelope", "Paintbrush", "Palette", "Easel", "Piano", "Drums", "Violin", "Trumpet", "Saxophone",
+        "Microphone", "Headphones", "Radio", "Television", "Computer", "Laptop", "Smartphone", "Game Controller", "Crown", "Ring",
+        "Necklace", "Glasses", "Sunglasses", "Hat", "Helmet", "Boots", "Trophy", "Medal", "Flag", "Treasure Chest",
+        "Sword", "Shield", "Bow and Arrow", "Boomerang", "Kite", "Yo-yo", "Teddy Bear", "Tent", "Campfire", "Igloo"
+    ],
+    "activities": [
+        "Surfing", "Skateboarding", "Skiing", "Snowboarding", "Swimming", "Diving", "Fishing", "Camping", "Hiking", "Climbing",
+        "Running", "Jogging", "Cycling", "Dancing", "Singing", "Juggling", "Cooking", "Baking", "Painting", "Drawing",
+        "Reading", "Writing", "Gardening", "Knitting", "Sewing", "Photography", "Gaming", "Bowling", "Archery", "Fencing",
+        "Boxing", "Karate", "Yoga", "Gymnastics", "Ballet", "Magic Show", "Skydiving", "Scuba Diving", "Kayaking", "Canoeing",
+        "Rowing", "Sailing", "Ice Skating", "Roller Skating", "Horse Riding", "Dog Walking", "Bird Watching", "Stargazing", "Sunbathing", "Shopping",
+        "Flying a Kite", "Building a Sandcastle", "Playing Guitar", "Playing Drums", "Playing Piano", "Playing Chess", "Playing Soccer", "Playing Basketball", "Playing Tennis", "Playing Golf"
+    ]
+}
+
+CLASSIC_WORDS = CLASSIC_CATEGORIES["general"]
 
 class GameRoom:
     def __init__(self, code: str, host_id: str, default_pdf: str = "sample_slides/ml_lecture_slides.pdf"):
@@ -56,6 +116,8 @@ class GameRoom:
         
         # Settings
         self.mode = "study"
+        self.classic_category = "general"
+        self.used_classic_words: List[str] = []
         self.selection_time = 20
         self.review_time = 5
         self.word_options = []
@@ -150,15 +212,18 @@ class GameRoom:
             except Exception:
                 self.remove_connection(player_id)
 
-    async def update_settings(self, player_id: str, draw_time: int, total_rounds: int, mode: str = "study"):
+    async def update_settings(self, player_id: str, draw_time: int, total_rounds: int, mode: str = "study", classic_category: str = "general"):
         if player_id != self.host_id or self.state != "LOBBY":
             return
         self.mode = mode if mode in ("study", "classic") else "study"
+        if classic_category in CLASSIC_CATEGORIES:
+            self.classic_category = classic_category
         self.draw_time = max(30, min(180, int(draw_time)))
         self.total_rounds = max(1, min(10, int(total_rounds)))
         await self.broadcast({
             "type": "settings_updated",
             "mode": self.mode,
+            "classic_category": self.classic_category,
             "draw_time": self.draw_time,
             "total_rounds": self.total_rounds
         })
@@ -310,7 +375,15 @@ class GameRoom:
             self.timer_task.cancel()
         self.current_slide_index = self.get_next_slide_index()
         slide = self.active_slide()
-        self.word_options = random.sample(CLASSIC_WORDS, 3) if self.mode == "classic" else []
+        if self.mode == "classic":
+            pool = CLASSIC_CATEGORIES.get(self.classic_category, CLASSIC_CATEGORIES["general"])
+            available = [w for w in pool if w not in self.used_classic_words]
+            if len(available) < 3:
+                self.used_classic_words = []
+                available = list(pool)
+            self.word_options = random.sample(available, 3)
+        else:
+            self.word_options = []
         self.time_remaining = self.selection_time
         common = {"slide": slide.model_dump() if slide else None, "mode": self.mode,
                   "time_limit": self.selection_time, "round": self.current_round,
@@ -344,6 +417,8 @@ class GameRoom:
             await self.send_to(player_id, {"type": "error", "message": "Choose a highlighted word on the current slide." if self.mode == "study" else "Choose one of the three words."})
             return
         word = match
+        if self.mode == "classic" and word not in self.used_classic_words:
+            self.used_classic_words.append(word)
         if self.timer_task and self.timer_task is not asyncio.current_task() and not self.timer_task.done():
             self.timer_task.cancel()
 
@@ -622,6 +697,7 @@ class GameRoom:
         return {
             "code": self.code,
             "mode": self.mode,
+            "classic_category": self.classic_category,
             "word_options": self.word_options if for_player_id == self.drawer_id else [],
             "state": self.state,
             "host_id": self.host_id,

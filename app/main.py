@@ -6,7 +6,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, F
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app.rooms import RoomManager
+from app.rooms import RoomManager, CLASSIC_CATEGORIES
 
 app = FastAPI(title="Doodle & Degree", description="Real-time Multiplayer Slide Study Pictionary Game")
 
@@ -38,11 +38,13 @@ async def serve_room(code: str):
     return FileResponse("static/index.html")
 
 @app.post("/api/rooms")
-async def create_room(host_id: Optional[str] = Form(None), mode: str = Form("study"), draw_time: int = Form(120), total_rounds: int = Form(3)):
+async def create_room(host_id: Optional[str] = Form(None), mode: str = Form("study"), draw_time: int = Form(120), total_rounds: int = Form(3), classic_category: str = Form("general")):
     if not host_id:
         host_id = "host_" + uuid.uuid4().hex[:8]
     room = room_manager.create_room(host_id=host_id, default_pdf="sample_slides/ml_lecture_slides.pdf")
     room.mode = mode if mode in ("classic", "study") else "study"
+    if classic_category in CLASSIC_CATEGORIES:
+        room.classic_category = classic_category
     room.draw_time = max(30, min(180, draw_time))
     room.total_rounds = max(1, min(10, total_rounds))
     return {
@@ -134,7 +136,7 @@ async def websocket_endpoint(websocket: WebSocket, code: str, player_id: str):
             elif msg_type == "update_settings":
                 draw_time = data.get("draw_time", 120)
                 total_rounds = data.get("total_rounds", 3)
-                await room.update_settings(player_id, draw_time, total_rounds, data.get("mode", room.mode))
+                await room.update_settings(player_id, draw_time, total_rounds, data.get("mode", room.mode), data.get("classic_category", room.classic_category))
 
             elif msg_type == "return_to_lobby":
                 await room.return_to_lobby(player_id)
