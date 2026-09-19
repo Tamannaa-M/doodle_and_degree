@@ -285,23 +285,31 @@ body {
   background-color: rgba(255, 75, 130, 0.2);
 }
 
-/* Color Swatches */
+/* Color Palette & Swatches */
+.color-palette-grid {
+  display: grid;
+  grid-template-rows: repeat(2, 20px);
+  grid-auto-flow: column;
+  gap: 4px;
+}
+
 .color-swatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 2px solid var(--ink);
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid var(--ink);
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .color-swatch:hover {
-  transform: scale(1.15);
+  transform: scale(1.22);
 }
 
 .color-swatch.active {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 2.5px var(--ink);
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px var(--ink);
+  z-index: 2;
 }
 
 /* Sticker Avatars */

@@ -160,25 +160,33 @@
               <input id="brushSizeSlider" type="range" min="2" max="24" value="6" class="w-16 accent-[#FF4B82]" title="Brush Size" />
             </div>
 
-            <!-- Color Palette Swatches -->
-            <div class="flex items-center gap-1.5">
-              <div class="color-swatch active" data-color="#1E1E24" style="background-color: #1E1E24;"></div>
-              <div class="color-swatch" data-color="#FF4B82" style="background-color: #FF4B82;"></div>
-              <div class="color-swatch" data-color="#FFE600" style="background-color: #FFE600;"></div>
-              <div class="color-swatch" data-color="#2563EB" style="background-color: #2563EB;"></div>
-              <div class="color-swatch" data-color="#00E5A3" style="background-color: #00E5A3;"></div>
-              <div class="color-swatch" data-color="#8B5CF6" style="background-color: #8B5CF6;"></div>
-              <div class="color-swatch" data-color="#FF7849" style="background-color: #FF7849;"></div>
-              <div class="color-swatch" data-color="#FFFFFF" style="background-color: #FFFFFF;"></div>
+            <!-- Sketch Heads Inspired 16-Color Palette Grid -->
+            <div class="color-palette-grid">
+              <div class="color-swatch active" data-color="#1E1E24" style="background-color: #1E1E24;" title="Ink Black"></div>
+              <div class="color-swatch" data-color="#84CC16" style="background-color: #84CC16;" title="Lime Green"></div>
+              <div class="color-swatch" data-color="#6B7280" style="background-color: #6B7280;" title="Dark Gray"></div>
+              <div class="color-swatch" data-color="#00E5A3" style="background-color: #00E5A3;" title="Emerald Mint"></div>
+              <div class="color-swatch" data-color="#9CA3AF" style="background-color: #9CA3AF;" title="Light Gray"></div>
+              <div class="color-swatch" data-color="#15803D" style="background-color: #15803D;" title="Forest Green"></div>
+              <div class="color-swatch" data-color="#FFFFFF" style="background-color: #FFFFFF;" title="White"></div>
+              <div class="color-swatch" data-color="#06B6D4" style="background-color: #06B6D4;" title="Cyan"></div>
+              <div class="color-swatch" data-color="#DC2626" style="background-color: #DC2626;" title="Crimson Red"></div>
+              <div class="color-swatch" data-color="#38BDF8" style="background-color: #38BDF8;" title="Sky Blue"></div>
+              <div class="color-swatch" data-color="#FF4B82" style="background-color: #FF4B82;" title="Hot Pink"></div>
+              <div class="color-swatch" data-color="#2563EB" style="background-color: #2563EB;" title="Royal Blue"></div>
+              <div class="color-swatch" data-color="#FF7849" style="background-color: #FF7849;" title="Orange"></div>
+              <div class="color-swatch" data-color="#8B5CF6" style="background-color: #8B5CF6;" title="Purple"></div>
+              <div class="color-swatch" data-color="#FFE600" style="background-color: #FFE600;" title="Sun Yellow"></div>
+              <div class="color-swatch" data-color="#854D0E" style="background-color: #854D0E;" title="Brown"></div>
             </div>
 
             <!-- Undo / Clear -->
             <div class="flex items-center gap-1.5">
-              <button id="btnToolUndo" class="neo-btn bg-white px-2 py-1 text-xs" title="Undo Stroke">
-                ↩️
+              <button id="btnToolUndo" class="neo-btn bg-white px-2.5 py-1 text-xs font-bold flex items-center gap-1" title="Undo Stroke">
+                <span>↩️</span><span>Undo</span>
               </button>
-              <button id="btnToolClear" class="neo-btn bg-white px-2 py-1 text-xs" title="Clear Canvas">
-                🗑️
+              <button id="btnToolClear" class="neo-btn bg-white px-2.5 py-1 text-xs font-bold flex items-center gap-1" title="Clear Canvas">
+                <span>🗑️</span><span>Clear</span>
               </button>
             </div>
           </div>
@@ -344,7 +352,6 @@
 
   <div id="appStatus" role="status" aria-live="polite" class="app-status hidden"></div>
   <!-- Scripts -->
-  <script src="/static/js/pdf.min.js"></script>
   <script src="/static/js/avatars.js"></script>
   <script src="/static/js/canvas.js"></script>
   <script src="/static/js/slide_viewer.js"></script>
