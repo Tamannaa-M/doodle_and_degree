@@ -71,37 +71,318 @@ function randomCode() {
   return [...bytes].map(x => chars[x % chars.length]).join("");
 }
 
-function getBotDoodleStrokes(step) {
+function getBotDoodleType(word) {
+  const w = String(word || "").toLowerCase().trim();
+  if (/pizza|burger|taco|sandwich|food|bread|cheese|snack|spaghetti|hot dog|pancake|waffle/i.test(w)) return "pizza";
+  if (/rocket|space|alien|satellite|astronaut|meteor|spaceship|starship/i.test(w)) return "rocket";
+  if (/house|castle|igloo|building|pyramid|home|tent|cabin/i.test(w)) return "house";
+  if (/car|truck|bus|train|vehicle|drive|motorcycle|scooter|tractor|ambulance/i.test(w)) return "car";
+  if (/tree|flower|plant|forest|garden|apple|sunflower|leaf|cactus/i.test(w)) return "tree";
+  if (/sun|star|rainbow|light|lightning|cloud|sky|diamond/i.test(w)) return "sun";
+  if (/fish|shark|dolphin|whale|octopus|ocean|sea|swimming|crab|lobster/i.test(w)) return "fish";
+  if (/ice cream|donut|cake|cupcake|cookie|sweet|chocolate|candy|lollipop/i.test(w)) return "icecream";
+  if (/balloon|kite|parachute|flying|air/i.test(w)) return "balloon";
+  if (/boat|ship|submarine|sailboat|anchor|sail|canoe|kayak/i.test(w)) return "boat";
+  if (/clock|watch|timer|hourglass|time/i.test(w)) return "clock";
+  if (/dog|puppy|wolf|fox|bear|panda|koala/i.test(w)) return "dog";
+  if (/cat|kitten|lion|tiger|leopard|panther|cheetah/i.test(w)) return "cat";
+  if (/model|data|graph|neural|network|algorithm|learning|loss|layer|matrix|vector|feature|weight|bias|cluster|regression|classification|tree|ai|computer/i.test(w)) return "chart";
+
+  const types = ["rocket", "pizza", "house", "car", "tree", "sun", "fish", "icecream", "balloon", "boat", "clock", "cat", "dog", "chart"];
+  let hash = 0;
+  for (let i = 0; i < w.length; i++) hash = (hash * 31 + w.charCodeAt(i)) >>> 0;
+  return types[hash % types.length];
+}
+
+function getBotDoodleStrokes(word, step) {
+  const type = getBotDoodleType(word);
   const strokes = [];
-  if (step === 0) {
-    const points = [];
-    const cx = 400, cy = 300, r = 120;
-    for (let i = 0; i <= 36; i++) {
-      const angle = (i * 10 * Math.PI) / 180;
-      points.push({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
+
+  if (type === "pizza") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 260, y: 160 }, { x: 540, y: 160 }, { x: 400, y: 460 }, { x: 260, y: 160 }] });
+    } else if (step === 1) {
+      strokes.push({ color: "#FFE600", width: 8, points: [{ x: 250, y: 155 }, { x: 400, y: 145 }, { x: 550, y: 155 }] });
+    } else if (step === 2) {
+      // Pepperonis
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 360, y: 220 }, { x: 365, y: 225 }, { x: 360, y: 220 }] });
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 440, y: 230 }, { x: 445, y: 235 }, { x: 440, y: 230 }] });
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 400, y: 310 }, { x: 405, y: 315 }, { x: 400, y: 310 }] });
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 385, y: 390 }, { x: 390, y: 395 }, { x: 385, y: 390 }] });
+    } else if (step === 3) {
+      // Cheese melt drizzle
+      strokes.push({ color: "#FFE600", width: 4, points: [{ x: 320, y: 200 }, { x: 350, y: 240 }, { x: 330, y: 280 }, { x: 420, y: 290 }, { x: 410, y: 350 }] });
+    } else if (step === 4) {
+      // Herbs & crust shading
+      strokes.push({ color: "#38B000", width: 4, points: [{ x: 380, y: 250 }, { x: 385, y: 255 }] });
+      strokes.push({ color: "#38B000", width: 4, points: [{ x: 430, y: 330 }, { x: 435, y: 335 }] });
+      strokes.push({ color: "#1E1E24", width: 3, points: [{ x: 270, y: 175 }, { x: 530, y: 175 }] });
     }
-    strokes.push({ color: "#1E1E24", width: 5, points });
-  } else if (step === 1) {
-    strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 350, y: 260 }, { x: 355, y: 265 }, { x: 360, y: 260 }] });
-    strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 440, y: 260 }, { x: 445, y: 265 }, { x: 450, y: 260 }] });
-  } else if (step === 2) {
-    const mouth = [];
-    for (let i = 0; i <= 20; i++) {
-      const angle = Math.PI * 0.2 + (i * Math.PI * 0.6) / 20;
-      mouth.push({ x: 400 + 50 * Math.cos(angle), y: 300 + 40 * Math.sin(angle) });
+  } else if (type === "rocket") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 400, y: 120 }, { x: 340, y: 240 }, { x: 340, y: 370 }, { x: 460, y: 370 }, { x: 460, y: 240 }, { x: 400, y: 120 }] });
+    } else if (step === 1) {
+      // Fins
+      strokes.push({ color: "#FF5964", width: 5, points: [{ x: 340, y: 320 }, { x: 270, y: 400 }, { x: 340, y: 380 }] });
+      strokes.push({ color: "#FF5964", width: 5, points: [{ x: 460, y: 320 }, { x: 530, y: 400 }, { x: 460, y: 380 }] });
+      // Tip
+      strokes.push({ color: "#FF5964", width: 5, points: [{ x: 370, y: 180 }, { x: 400, y: 120 }, { x: 430, y: 180 }, { x: 370, y: 180 }] });
+    } else if (step === 2) {
+      // Porthole Window
+      const windowPts = [];
+      for (let i = 0; i <= 20; i++) {
+        const a = (i * 18 * Math.PI) / 180;
+        windowPts.push({ x: 400 + 35 * Math.cos(a), y: 270 + 35 * Math.sin(a) });
+      }
+      strokes.push({ color: "#35A7FF", width: 4, points: windowPts });
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 400, y: 270 }, { x: 405, y: 270 }] });
+    } else if (step === 3) {
+      // Fire exhaust
+      strokes.push({ color: "#FF5964", width: 5, points: [{ x: 360, y: 370 }, { x: 380, y: 460 }, { x: 400, y: 400 }, { x: 420, y: 470 }, { x: 440, y: 370 }] });
+      strokes.push({ color: "#FFE600", width: 4, points: [{ x: 380, y: 370 }, { x: 400, y: 440 }, { x: 420, y: 370 }] });
+    } else if (step === 4) {
+      // Stars & space sparkles
+      strokes.push({ color: "#FFE600", width: 4, points: [{ x: 220, y: 160 }, { x: 240, y: 160 }, { x: 230, y: 145 }, { x: 230, y: 175 }] });
+      strokes.push({ color: "#FFE600", width: 4, points: [{ x: 570, y: 220 }, { x: 590, y: 220 }, { x: 580, y: 205 }, { x: 580, y: 235 }] });
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 200, y: 320 }, { x: 215, y: 320 }, { x: 207, y: 310 }, { x: 207, y: 330 }] });
     }
-    strokes.push({ color: "#FF5964", width: 5, points: mouth });
-    strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 310, y: 210 }, { x: 300, y: 130 }, { x: 360, y: 190 }] });
-    strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 490, y: 210 }, { x: 500, y: 130 }, { x: 440, y: 190 }] });
-  } else if (step === 3) {
-    strokes.push({ color: "#FFE600", width: 6, points: [{ x: 395, y: 290 }, { x: 405, y: 290 }, { x: 400, y: 298 }, { x: 395, y: 290 }] });
-    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 340, y: 295 }, { x: 260, y: 285 }] });
-    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 340, y: 305 }, { x: 260, y: 315 }] });
-    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 460, y: 295 }, { x: 540, y: 285 }] });
-    strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 460, y: 305 }, { x: 540, y: 315 }] });
-  } else if (step === 4) {
-    strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 180, y: 140 }, { x: 220, y: 140 }, { x: 200, y: 110 }, { x: 200, y: 170 }] });
-    strokes.push({ color: "#38B000", width: 4, points: [{ x: 600, y: 140 }, { x: 640, y: 140 }, { x: 620, y: 110 }, { x: 620, y: 170 }] });
+  } else if (type === "house") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 280, y: 260 }, { x: 520, y: 260 }, { x: 520, y: 460 }, { x: 280, y: 460 }, { x: 280, y: 260 }] });
+    } else if (step === 1) {
+      // Roof
+      strokes.push({ color: "#FF5964", width: 5, points: [{ x: 250, y: 260 }, { x: 400, y: 140 }, { x: 550, y: 260 }, { x: 250, y: 260 }] });
+    } else if (step === 2) {
+      // Door & Knob
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 360, y: 460 }, { x: 360, y: 350 }, { x: 440, y: 350 }, { x: 440, y: 460 }] });
+      strokes.push({ color: "#FFE600", width: 6, points: [{ x: 425, y: 405 }, { x: 428, y: 405 }] });
+    } else if (step === 3) {
+      // Windows
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 305, y: 290 }, { x: 345, y: 290 }, { x: 345, y: 330 }, { x: 305, y: 330 }, { x: 305, y: 290 }] });
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 455, y: 290 }, { x: 495, y: 290 }, { x: 495, y: 330 }, { x: 455, y: 330 }, { x: 455, y: 290 }] });
+      strokes.push({ color: "#1E1E24", width: 2, points: [{ x: 325, y: 290 }, { x: 325, y: 330 }] });
+      strokes.push({ color: "#1E1E24", width: 2, points: [{ x: 475, y: 290 }, { x: 475, y: 330 }] });
+    } else if (step === 4) {
+      // Chimney + Smoke + Sun
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 460, y: 190 }, { x: 460, y: 140 }, { x: 490, y: 140 }, { x: 490, y: 220 }] });
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 475, y: 125 }, { x: 485, y: 105 }, { x: 475, y: 85 }, { x: 495, y: 65 }] });
+      strokes.push({ color: "#FFE600", width: 5, points: [{ x: 180, y: 120 }, { x: 210, y: 120 }, { x: 195, y: 105 }, { x: 195, y: 135 }] });
+    }
+  } else if (type === "car") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 240, y: 380 }, { x: 240, y: 320 }, { x: 330, y: 320 }, { x: 380, y: 230 }, { x: 480, y: 230 }, { x: 530, y: 320 }, { x: 580, y: 320 }, { x: 580, y: 380 }, { x: 240, y: 380 }] });
+    } else if (step === 1) {
+      // Wheels
+      const w1 = [], w2 = [];
+      for (let i = 0; i <= 20; i++) {
+        const a = (i * 18 * Math.PI) / 180;
+        w1.push({ x: 310 + 35 * Math.cos(a), y: 385 + 35 * Math.sin(a) });
+        w2.push({ x: 510 + 35 * Math.cos(a), y: 385 + 35 * Math.sin(a) });
+      }
+      strokes.push({ color: "#1E1E24", width: 6, points: w1 });
+      strokes.push({ color: "#1E1E24", width: 6, points: w2 });
+      strokes.push({ color: "#FFE600", width: 5, points: [{ x: 310, y: 385 }, { x: 312, y: 385 }] });
+      strokes.push({ color: "#FFE600", width: 5, points: [{ x: 510, y: 385 }, { x: 512, y: 385 }] });
+    } else if (step === 2) {
+      // Windows
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 340, y: 315 }, { x: 380, y: 245 }, { x: 425, y: 245 }, { x: 425, y: 315 }, { x: 340, y: 315 }] });
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 435, y: 245 }, { x: 475, y: 245 }, { x: 515, y: 315 }, { x: 435, y: 315 }, { x: 435, y: 245 }] });
+    } else if (step === 3) {
+      // Headlight & Door Handle
+      strokes.push({ color: "#FFE600", width: 6, points: [{ x: 580, y: 340 }, { x: 585, y: 340 }] });
+      strokes.push({ color: "#FFE600", width: 3, points: [{ x: 585, y: 330 }, { x: 650, y: 320 }] });
+      strokes.push({ color: "#FFE600", width: 3, points: [{ x: 585, y: 350 }, { x: 650, y: 360 }] });
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 395, y: 335 }, { x: 415, y: 335 }] });
+    } else if (step === 4) {
+      // Road line and speed lines
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 160, y: 425 }, { x: 680, y: 425 }] });
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 170, y: 310 }, { x: 210, y: 310 }] });
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 190, y: 340 }, { x: 225, y: 340 }] });
+    }
+  } else if (type === "tree") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 7, points: [{ x: 370, y: 460 }, { x: 375, y: 300 }, { x: 425, y: 300 }, { x: 430, y: 460 }] });
+    } else if (step === 1) {
+      // Foliage cloud canopy
+      const f = [];
+      const cx = 400, cy = 230;
+      for (let i = 0; i <= 36; i++) {
+        const a = (i * 10 * Math.PI) / 180;
+        const r = 110 + 15 * Math.sin(a * 6);
+        f.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+      }
+      strokes.push({ color: "#38B000", width: 6, points: f });
+    } else if (step === 2) {
+      // Inner branches
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 400, y: 300 }, { x: 350, y: 220 }] });
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 400, y: 280 }, { x: 450, y: 210 }] });
+    } else if (step === 3) {
+      // Apples on tree
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 340, y: 200 }, { x: 345, y: 200 }] });
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 440, y: 190 }, { x: 445, y: 190 }] });
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 390, y: 160 }, { x: 395, y: 160 }] });
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 410, y: 240 }, { x: 415, y: 240 }] });
+    } else if (step === 4) {
+      // Grass ground
+      strokes.push({ color: "#38B000", width: 5, points: [{ x: 300, y: 460 }, { x: 310, y: 440 }, { x: 320, y: 460 }, { x: 480, y: 460 }, { x: 490, y: 440 }, { x: 500, y: 460 }] });
+    }
+  } else if (type === "sun") {
+    if (step === 0) {
+      const sunPts = [];
+      for (let i = 0; i <= 36; i++) {
+        const a = (i * 10 * Math.PI) / 180;
+        sunPts.push({ x: 400 + 80 * Math.cos(a), y: 280 + 80 * Math.sin(a) });
+      }
+      strokes.push({ color: "#FFE600", width: 6, points: sunPts });
+    } else if (step === 1) {
+      // Sun rays
+      for (let i = 0; i < 8; i++) {
+        const a = (i * 45 * Math.PI) / 180;
+        strokes.push({
+          color: "#FF5964", width: 5,
+          points: [{ x: 400 + 95 * Math.cos(a), y: 280 + 95 * Math.sin(a) }, { x: 400 + 135 * Math.cos(a), y: 280 + 135 * Math.sin(a) }]
+        });
+      }
+    } else if (step === 2) {
+      // Cool Sunglasses
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 345, y: 270 }, { x: 390, y: 270 }, { x: 385, y: 295 }, { x: 350, y: 295 }, { x: 345, y: 270 }] });
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 410, y: 270 }, { x: 455, y: 270 }, { x: 450, y: 295 }, { x: 415, y: 295 }, { x: 410, y: 270 }] });
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 390, y: 275 }, { x: 410, y: 275 }] });
+    } else if (step === 3) {
+      // Smiley mouth
+      const mouth = [];
+      for (let i = 0; i <= 10; i++) {
+        const a = Math.PI * 0.2 + (i * Math.PI * 0.6) / 10;
+        mouth.push({ x: 400 + 35 * Math.cos(a), y: 280 + 30 * Math.sin(a) });
+      }
+      strokes.push({ color: "#FF5964", width: 4, points: mouth });
+    } else if (step === 4) {
+      // Fluffy cloud
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 220, y: 380 }, { x: 250, y: 350 }, { x: 300, y: 350 }, { x: 330, y: 380 }, { x: 220, y: 380 }] });
+    }
+  } else if (type === "fish") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 240, y: 300 }, { x: 340, y: 210 }, { x: 480, y: 260 }, { x: 550, y: 200 }, { x: 530, y: 300 }, { x: 550, y: 400 }, { x: 480, y: 340 }, { x: 340, y: 390 }, { x: 240, y: 300 }] });
+    } else if (step === 1) {
+      // Fins
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 370, y: 225 }, { x: 400, y: 165 }, { x: 430, y: 245 }] });
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 370, y: 375 }, { x: 400, y: 435 }, { x: 430, y: 355 }] });
+    } else if (step === 2) {
+      // Eye & Smile
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 290, y: 275 }, { x: 295, y: 275 }] });
+      strokes.push({ color: "#FF5964", width: 4, points: [{ x: 245, y: 305 }, { x: 265, y: 315 }] });
+    } else if (step === 3) {
+      // Scales
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 360, y: 260 }, { x: 380, y: 280 }, { x: 360, y: 300 }] });
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 410, y: 270 }, { x: 430, y: 290 }, { x: 410, y: 310 }] });
+      strokes.push({ color: "#35A7FF", width: 3, points: [{ x: 360, y: 310 }, { x: 380, y: 330 }, { x: 360, y: 350 }] });
+    } else if (step === 4) {
+      // Bubbles
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 190, y: 250 }, { x: 195, y: 250 }] });
+      strokes.push({ color: "#35A7FF", width: 5, points: [{ x: 170, y: 200 }, { x: 175, y: 200 }] });
+      strokes.push({ color: "#35A7FF", width: 6, points: [{ x: 150, y: 140 }, { x: 156, y: 140 }] });
+    }
+  } else if (type === "icecream") {
+    if (step === 0) {
+      // Waffle cone
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 330, y: 270 }, { x: 470, y: 270 }, { x: 400, y: 470 }, { x: 330, y: 270 }] });
+    } else if (step === 1) {
+      // Scoop 1
+      const s1 = [];
+      for (let i = 0; i <= 20; i++) {
+        const a = (i * 18 * Math.PI) / 180;
+        s1.push({ x: 400 + 75 * Math.cos(a), y: 220 + 65 * Math.sin(a) });
+      }
+      strokes.push({ color: "#FF5964", width: 5, points: s1 });
+    } else if (step === 2) {
+      // Scoop 2 (top)
+      const s2 = [];
+      for (let i = 0; i <= 20; i++) {
+        const a = (i * 18 * Math.PI) / 180;
+        s2.push({ x: 400 + 55 * Math.cos(a), y: 150 + 50 * Math.sin(a) });
+      }
+      strokes.push({ color: "#FFE600", width: 5, points: s2 });
+    } else if (step === 3) {
+      // Cherry with stem
+      strokes.push({ color: "#FF5964", width: 8, points: [{ x: 400, y: 95 }, { x: 405, y: 95 }] });
+      strokes.push({ color: "#38B000", width: 3, points: [{ x: 402, y: 90 }, { x: 415, y: 65 }] });
+    } else if (step === 4) {
+      // Sprinkles & Cone crosshatch
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 375, y: 140 }, { x: 390, y: 145 }] });
+      strokes.push({ color: "#38B000", width: 4, points: [{ x: 415, y: 140 }, { x: 430, y: 145 }] });
+      strokes.push({ color: "#1E1E24", width: 2, points: [{ x: 350, y: 300 }, { x: 430, y: 400 }] });
+      strokes.push({ color: "#1E1E24", width: 2, points: [{ x: 450, y: 300 }, { x: 370, y: 400 }] });
+    }
+  } else if (type === "boat") {
+    if (step === 0) {
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 240, y: 360 }, { x: 560, y: 360 }, { x: 490, y: 440 }, { x: 310, y: 440 }, { x: 240, y: 360 }] });
+    } else if (step === 1) {
+      // Mast
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 400, y: 360 }, { x: 400, y: 140 }] });
+    } else if (step === 2) {
+      // Mainsail
+      strokes.push({ color: "#FF5964", width: 5, points: [{ x: 405, y: 160 }, { x: 405, y: 335 }, { x: 535, y: 335 }, { x: 405, y: 160 }] });
+    } else if (step === 3) {
+      // Jib sail & Flag
+      strokes.push({ color: "#35A7FF", width: 5, points: [{ x: 395, y: 180 }, { x: 395, y: 335 }, { x: 285, y: 335 }, { x: 395, y: 180 }] });
+      strokes.push({ color: "#FFE600", width: 4, points: [{ x: 400, y: 140 }, { x: 430, y: 150 }, { x: 400, y: 160 }] });
+    } else if (step === 4) {
+      // Ocean Waves
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 180, y: 455 }, { x: 230, y: 440 }, { x: 280, y: 455 }, { x: 330, y: 440 }, { x: 380, y: 455 }, { x: 430, y: 440 }, { x: 480, y: 455 }, { x: 530, y: 440 }, { x: 580, y: 455 }, { x: 630, y: 440 }] });
+    }
+  } else if (type === "chart") {
+    if (step === 0) {
+      // Screen/Chart Frame
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 220, y: 140 }, { x: 580, y: 140 }, { x: 580, y: 420 }, { x: 220, y: 420 }, { x: 220, y: 140 }] });
+    } else if (step === 1) {
+      // Network nodes (layers)
+      const nodes = [{ x: 280, y: 220 }, { x: 280, y: 320 }, { x: 400, y: 190 }, { x: 400, y: 280 }, { x: 400, y: 370 }, { x: 520, y: 240 }, { x: 520, y: 340 }];
+      for (const pt of nodes) {
+        strokes.push({ color: "#35A7FF", width: 8, points: [{ x: pt.x, y: pt.y }, { x: pt.x + 2, y: pt.y }] });
+      }
+    } else if (step === 2) {
+      // Synaptic connections
+      strokes.push({ color: "#FFE600", width: 2, points: [{ x: 280, y: 220 }, { x: 400, y: 190 }, { x: 520, y: 240 }] });
+      strokes.push({ color: "#FFE600", width: 2, points: [{ x: 280, y: 220 }, { x: 400, y: 280 }, { x: 520, y: 340 }] });
+      strokes.push({ color: "#FFE600", width: 2, points: [{ x: 280, y: 320 }, { x: 400, y: 280 }, { x: 520, y: 240 }] });
+      strokes.push({ color: "#FFE600", width: 2, points: [{ x: 280, y: 320 }, { x: 400, y: 370 }, { x: 520, y: 340 }] });
+    } else if (step === 3) {
+      // Performance bar chart
+      strokes.push({ color: "#FF5964", width: 6, points: [{ x: 260, y: 400 }, { x: 260, y: 350 }] });
+      strokes.push({ color: "#FFE600", width: 6, points: [{ x: 300, y: 400 }, { x: 300, y: 310 }] });
+      strokes.push({ color: "#38B000", width: 6, points: [{ x: 340, y: 400 }, { x: 340, y: 260 }] });
+    } else if (step === 4) {
+      // Lightbulb sparkle
+      strokes.push({ color: "#FFE600", width: 5, points: [{ x: 400, y: 100 }, { x: 400, y: 70 }] });
+      strokes.push({ color: "#FFE600", width: 5, points: [{ x: 375, y: 90 }, { x: 425, y: 90 }] });
+    }
+  } else {
+    // Cat / Dog fallback
+    if (step === 0) {
+      const pts = [];
+      for (let i = 0; i <= 36; i++) {
+        const a = (i * 10 * Math.PI) / 180;
+        pts.push({ x: 400 + 110 * Math.cos(a), y: 300 + 110 * Math.sin(a) });
+      }
+      strokes.push({ color: "#1E1E24", width: 5, points: pts });
+    } else if (step === 1) {
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 360, y: 265 }, { x: 365, y: 265 }] });
+      strokes.push({ color: "#1E1E24", width: 6, points: [{ x: 440, y: 265 }, { x: 445, y: 265 }] });
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 310, y: 210 }, { x: 300, y: 130 }, { x: 360, y: 190 }] });
+      strokes.push({ color: "#1E1E24", width: 5, points: [{ x: 490, y: 210 }, { x: 500, y: 130 }, { x: 440, y: 190 }] });
+    } else if (step === 2) {
+      strokes.push({ color: "#FF5964", width: 6, points: [{ x: 395, y: 295 }, { x: 405, y: 295 }, { x: 400, y: 305 }, { x: 395, y: 295 }] });
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 400, y: 305 }, { x: 385, y: 325 }, { x: 370, y: 320 }] });
+      strokes.push({ color: "#1E1E24", width: 4, points: [{ x: 400, y: 305 }, { x: 415, y: 325 }, { x: 430, y: 320 }] });
+    } else if (step === 3) {
+      strokes.push({ color: "#1E1E24", width: 3, points: [{ x: 350, y: 300 }, { x: 270, y: 290 }] });
+      strokes.push({ color: "#1E1E24", width: 3, points: [{ x: 350, y: 310 }, { x: 270, y: 320 }] });
+      strokes.push({ color: "#1E1E24", width: 3, points: [{ x: 450, y: 300 }, { x: 530, y: 290 }] });
+      strokes.push({ color: "#1E1E24", width: 3, points: [{ x: 450, y: 310 }, { x: 530, y: 320 }] });
+    } else if (step === 4) {
+      strokes.push({ color: "#FFE600", width: 4, points: [{ x: 220, y: 140 }, { x: 240, y: 140 }, { x: 230, y: 125 }, { x: 230, y: 155 }] });
+      strokes.push({ color: "#35A7FF", width: 4, points: [{ x: 570, y: 140 }, { x: 590, y: 140 }, { x: 580, y: 125 }, { x: 580, y: 155 }] });
+    }
   }
   return strokes;
 }
@@ -499,7 +780,7 @@ export class GameRoom {
           const elapsed = this.room.drawTime - left;
           if (elapsed > 0 && elapsed % 3 === 0 && (this.room.botDoodleStep || 0) < 5) {
             const step = this.room.botDoodleStep || 0;
-            const strokes = getBotDoodleStrokes(step);
+            const strokes = getBotDoodleStrokes(this.room.currentWord, step);
             for (const stroke of strokes) {
               this.room.strokes.push(stroke);
               this.broadcast({ type: "stroke_drawn", stroke });
