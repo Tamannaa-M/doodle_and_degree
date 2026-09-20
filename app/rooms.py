@@ -107,244 +107,6 @@ CLASSIC_CATEGORIES = {
 
 CLASSIC_WORDS = CLASSIC_CATEGORIES["general"]
 
-def get_bot_doodle_type(word: str) -> str:
-    import re
-    w = str(word or "").lower().strip()
-    if re.search(r"pizza|burger|taco|sandwich|food|bread|cheese|snack|spaghetti|hot dog|pancake|waffle", w, re.I): return "pizza"
-    if re.search(r"rocket|space|alien|satellite|astronaut|meteor|spaceship|starship", w, re.I): return "rocket"
-    if re.search(r"house|castle|igloo|building|pyramid|home|tent|cabin", w, re.I): return "house"
-    if re.search(r"car|truck|bus|train|vehicle|drive|motorcycle|scooter|tractor|ambulance", w, re.I): return "car"
-    if re.search(r"tree|flower|plant|forest|garden|apple|sunflower|leaf|cactus", w, re.I): return "tree"
-    if re.search(r"sun|star|rainbow|light|lightning|cloud|sky|diamond", w, re.I): return "sun"
-    if re.search(r"fish|shark|dolphin|whale|octopus|ocean|sea|swimming|crab|lobster", w, re.I): return "fish"
-    if re.search(r"ice cream|donut|cake|cupcake|cookie|sweet|chocolate|candy|lollipop", w, re.I): return "icecream"
-    if re.search(r"balloon|kite|parachute|flying|air", w, re.I): return "balloon"
-    if re.search(r"boat|ship|submarine|sailboat|anchor|sail|canoe|kayak", w, re.I): return "boat"
-    if re.search(r"clock|watch|timer|hourglass|time", w, re.I): return "clock"
-    if re.search(r"dog|puppy|wolf|fox|bear|panda|koala", w, re.I): return "dog"
-    if re.search(r"cat|kitten|lion|tiger|leopard|panther|cheetah", w, re.I): return "cat"
-    if re.search(r"model|data|graph|neural|network|algorithm|learning|loss|layer|matrix|vector|feature|weight|bias|cluster|regression|classification|tree|ai|computer", w, re.I): return "chart"
-
-    types = ["rocket", "pizza", "house", "car", "tree", "sun", "fish", "icecream", "balloon", "boat", "clock", "cat", "dog", "chart"]
-    h = 0
-    for ch in w:
-        h = ((h * 31) + ord(ch)) & 0xFFFFFFFF
-    return types[h % len(types)]
-
-def get_bot_doodle_strokes(word: str, step: int) -> list:
-    import math
-    dtype = get_bot_doodle_type(word)
-    strokes = []
-
-    if dtype == "pizza":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 260, "y": 160}, {"x": 540, "y": 160}, {"x": 400, "y": 460}, {"x": 260, "y": 160}]})
-        elif step == 1:
-            strokes.append({"color": "#FFE600", "width": 8, "points": [{"x": 250, "y": 155}, {"x": 400, "y": 145}, {"x": 550, "y": 155}]})
-        elif step == 2:
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 360, "y": 220}, {"x": 365, "y": 225}, {"x": 360, "y": 220}]})
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 440, "y": 230}, {"x": 445, "y": 235}, {"x": 440, "y": 230}]})
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 400, "y": 310}, {"x": 405, "y": 315}, {"x": 400, "y": 310}]})
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 385, "y": 390}, {"x": 390, "y": 395}, {"x": 385, "y": 390}]})
-        elif step == 3:
-            strokes.append({"color": "#FFE600", "width": 4, "points": [{"x": 320, "y": 200}, {"x": 350, "y": 240}, {"x": 330, "y": 280}, {"x": 420, "y": 290}, {"x": 410, "y": 350}]})
-        elif step == 4:
-            strokes.append({"color": "#38B000", "width": 4, "points": [{"x": 380, "y": 250}, {"x": 385, "y": 255}]})
-            strokes.append({"color": "#38B000", "width": 4, "points": [{"x": 430, "y": 330}, {"x": 435, "y": 335}]})
-            strokes.append({"color": "#1E1E24", "width": 3, "points": [{"x": 270, "y": 175}, {"x": 530, "y": 175}]})
-
-    elif dtype == "rocket":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 400, "y": 120}, {"x": 340, "y": 240}, {"x": 340, "y": 370}, {"x": 460, "y": 370}, {"x": 460, "y": 240}, {"x": 400, "y": 120}]})
-        elif step == 1:
-            strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 340, "y": 320}, {"x": 270, "y": 400}, {"x": 340, "y": 380}]})
-            strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 460, "y": 320}, {"x": 530, "y": 400}, {"x": 460, "y": 380}]})
-            strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 370, "y": 180}, {"x": 400, "y": 120}, {"x": 430, "y": 180}, {"x": 370, "y": 180}]})
-        elif step == 2:
-            win_pts = []
-            for i in range(21):
-                a = (i * 18 * math.pi) / 180
-                win_pts.append({"x": 400 + 35 * math.cos(a), "y": 270 + 35 * math.sin(a)})
-            strokes.append({"color": "#35A7FF", "width": 4, "points": win_pts})
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 400, "y": 270}, {"x": 405, "y": 270}]})
-        elif step == 3:
-            strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 360, "y": 370}, {"x": 380, "y": 460}, {"x": 400, "y": 400}, {"x": 420, "y": 470}, {"x": 440, "y": 370}]})
-            strokes.append({"color": "#FFE600", "width": 4, "points": [{"x": 380, "y": 370}, {"x": 400, "y": 440}, {"x": 420, "y": 370}]})
-        elif step == 4:
-            strokes.append({"color": "#FFE600", "width": 4, "points": [{"x": 220, "y": 160}, {"x": 240, "y": 160}, {"x": 230, "y": 145}, {"x": 230, "y": 175}]})
-            strokes.append({"color": "#FFE600", "width": 4, "points": [{"x": 570, "y": 220}, {"x": 590, "y": 220}, {"x": 580, "y": 205}, {"x": 580, "y": 235}]})
-
-    elif dtype == "house":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 280, "y": 260}, {"x": 520, "y": 260}, {"x": 520, "y": 460}, {"x": 280, "y": 460}, {"x": 280, "y": 260}]})
-        elif step == 1:
-            strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 250, "y": 260}, {"x": 400, "y": 140}, {"x": 550, "y": 260}, {"x": 250, "y": 260}]})
-        elif step == 2:
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 360, "y": 460}, {"x": 360, "y": 350}, {"x": 440, "y": 350}, {"x": 440, "y": 460}]})
-            strokes.append({"color": "#FFE600", "width": 6, "points": [{"x": 425, "y": 405}, {"x": 428, "y": 405}]})
-        elif step == 3:
-            strokes.append({"color": "#35A7FF", "width": 3, "points": [{"x": 305, "y": 290}, {"x": 345, "y": 290}, {"x": 345, "y": 330}, {"x": 305, "y": 330}, {"x": 305, "y": 290}]})
-            strokes.append({"color": "#35A7FF", "width": 3, "points": [{"x": 455, "y": 290}, {"x": 495, "y": 290}, {"x": 495, "y": 330}, {"x": 455, "y": 330}, {"x": 455, "y": 290}]})
-        elif step == 4:
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 460, "y": 190}, {"x": 460, "y": 140}, {"x": 490, "y": 140}, {"x": 490, "y": 220}]})
-            strokes.append({"color": "#35A7FF", "width": 3, "points": [{"x": 475, "y": 125}, {"x": 485, "y": 105}, {"x": 475, "y": 85}, {"x": 495, "y": 65}]})
-            strokes.append({"color": "#FFE600", "width": 5, "points": [{"x": 180, "y": 120}, {"x": 210, "y": 120}, {"x": 195, "y": 105}, {"x": 195, "y": 135}]})
-
-    elif dtype == "car":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 240, "y": 380}, {"x": 240, "y": 320}, {"x": 330, "y": 320}, {"x": 380, "y": 230}, {"x": 480, "y": 230}, {"x": 530, "y": 320}, {"x": 580, "y": 320}, {"x": 580, "y": 380}, {"x": 240, "y": 380}]})
-        elif step == 1:
-            w1, w2 = [], []
-            for i in range(21):
-                a = (i * 18 * math.pi) / 180
-                w1.append({"x": 310 + 35 * math.cos(a), "y": 385 + 35 * math.sin(a)})
-                w2.append({"x": 510 + 35 * math.cos(a), "y": 385 + 35 * math.sin(a)})
-            strokes.append({"color": "#1E1E24", "width": 6, "points": w1})
-            strokes.append({"color": "#1E1E24", "width": 6, "points": w2})
-        elif step == 2:
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 340, "y": 315}, {"x": 380, "y": 245}, {"x": 425, "y": 245}, {"x": 425, "y": 315}, {"x": 340, "y": 315}]})
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 435, "y": 245}, {"x": 475, "y": 245}, {"x": 515, "y": 315}, {"x": 435, "y": 315}, {"x": 435, "y": 245}]})
-        elif step == 3:
-            strokes.append({"color": "#FFE600", "width": 6, "points": [{"x": 580, "y": 340}, {"x": 585, "y": 340}]})
-            strokes.append({"color": "#FFE600", "width": 3, "points": [{"x": 585, "y": 330}, {"x": 650, "y": 320}]})
-        elif step == 4:
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 160, "y": 425}, {"x": 680, "y": 425}]})
-
-    elif dtype == "tree":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 7, "points": [{"x": 370, "y": 460}, {"x": 375, "y": 300}, {"x": 425, "y": 300}, {"x": 430, "y": 460}]})
-        elif step == 1:
-            f = []
-            for i in range(37):
-                a = (i * 10 * math.pi) / 180
-                r = 110 + 15 * math.sin(a * 6)
-                f.append({"x": 400 + r * math.cos(a), "y": 230 + r * math.sin(a)})
-            strokes.append({"color": "#38B000", "width": 6, "points": f})
-        elif step == 2:
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 400, "y": 300}, {"x": 350, "y": 220}]})
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 400, "y": 280}, {"x": 450, "y": 210}]})
-        elif step == 3:
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 340, "y": 200}, {"x": 345, "y": 200}]})
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 440, "y": 190}, {"x": 445, "y": 190}]})
-        elif step == 4:
-            strokes.append({"color": "#38B000", "width": 5, "points": [{"x": 300, "y": 460}, {"x": 310, "y": 440}, {"x": 320, "y": 460}, {"x": 480, "y": 460}, {"x": 490, "y": 440}, {"x": 500, "y": 460}]})
-
-    elif dtype == "sun":
-        if step == 0:
-            sun_pts = []
-            for i in range(37):
-                a = (i * 10 * math.pi) / 180
-                sun_pts.append({"x": 400 + 80 * math.cos(a), "y": 280 + 80 * math.sin(a)})
-            strokes.append({"color": "#FFE600", "width": 6, "points": sun_pts})
-        elif step == 1:
-            for i in range(8):
-                a = (i * 45 * math.pi) / 180
-                strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 400 + 95 * math.cos(a), "y": 280 + 95 * math.sin(a)}, {"x": 400 + 135 * math.cos(a), "y": 280 + 135 * math.sin(a)}]})
-        elif step == 2:
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 345, "y": 270}, {"x": 390, "y": 270}, {"x": 385, "y": 295}, {"x": 350, "y": 295}, {"x": 345, "y": 270}]})
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 410, "y": 270}, {"x": 455, "y": 270}, {"x": 450, "y": 295}, {"x": 415, "y": 295}, {"x": 410, "y": 270}]})
-        elif step == 3:
-            mouth = []
-            for i in range(11):
-                a = math.pi * 0.2 + (i * math.pi * 0.6) / 10
-                mouth.append({"x": 400 + 35 * math.cos(a), "y": 280 + 30 * math.sin(a)})
-            strokes.append({"color": "#FF5964", "width": 4, "points": mouth})
-        elif step == 4:
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 220, "y": 380}, {"x": 250, "y": 350}, {"x": 300, "y": 350}, {"x": 330, "y": 380}, {"x": 220, "y": 380}]})
-
-    elif dtype == "fish":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 240, "y": 300}, {"x": 340, "y": 210}, {"x": 480, "y": 260}, {"x": 550, "y": 200}, {"x": 530, "y": 300}, {"x": 550, "y": 400}, {"x": 480, "y": 340}, {"x": 340, "y": 390}, {"x": 240, "y": 300}]})
-        elif step == 1:
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 370, "y": 225}, {"x": 400, "y": 165}, {"x": 430, "y": 245}]})
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 370, "y": 375}, {"x": 400, "y": 435}, {"x": 430, "y": 355}]})
-        elif step == 2:
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 290, "y": 275}, {"x": 295, "y": 275}]})
-            strokes.append({"color": "#FF5964", "width": 4, "points": [{"x": 245, "y": 305}, {"x": 265, "y": 315}]})
-        elif step == 3:
-            strokes.append({"color": "#35A7FF", "width": 3, "points": [{"x": 360, "y": 260}, {"x": 380, "y": 280}, {"x": 360, "y": 300}]})
-        elif step == 4:
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 190, "y": 250}, {"x": 195, "y": 250}]})
-            strokes.append({"color": "#35A7FF", "width": 5, "points": [{"x": 170, "y": 200}, {"x": 175, "y": 200}]})
-
-    elif dtype == "icecream":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 330, "y": 270}, {"x": 470, "y": 270}, {"x": 400, "y": 470}, {"x": 330, "y": 270}]})
-        elif step == 1:
-            s1 = []
-            for i in range(21):
-                a = (i * 18 * math.pi) / 180
-                s1.append({"x": 400 + 75 * math.cos(a), "y": 220 + 65 * math.sin(a)})
-            strokes.append({"color": "#FF5964", "width": 5, "points": s1})
-        elif step == 2:
-            s2 = []
-            for i in range(21):
-                a = (i * 18 * math.pi) / 180
-                s2.append({"x": 400 + 55 * math.cos(a), "y": 150 + 50 * math.sin(a)})
-            strokes.append({"color": "#FFE600", "width": 5, "points": s2})
-        elif step == 3:
-            strokes.append({"color": "#FF5964", "width": 8, "points": [{"x": 400, "y": 95}, {"x": 405, "y": 95}]})
-            strokes.append({"color": "#38B000", "width": 3, "points": [{"x": 402, "y": 90}, {"x": 415, "y": 65}]})
-        elif step == 4:
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 375, "y": 140}, {"x": 390, "y": 145}]})
-            strokes.append({"color": "#38B000", "width": 4, "points": [{"x": 415, "y": 140}, {"x": 430, "y": 145}]})
-
-    elif dtype == "boat":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 240, "y": 360}, {"x": 560, "y": 360}, {"x": 490, "y": 440}, {"x": 310, "y": 440}, {"x": 240, "y": 360}]})
-        elif step == 1:
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 400, "y": 360}, {"x": 400, "y": 140}]})
-        elif step == 2:
-            strokes.append({"color": "#FF5964", "width": 5, "points": [{"x": 405, "y": 160}, {"x": 405, "y": 335}, {"x": 535, "y": 335}, {"x": 405, "y": 160}]})
-        elif step == 3:
-            strokes.append({"color": "#35A7FF", "width": 5, "points": [{"x": 395, "y": 180}, {"x": 395, "y": 335}, {"x": 285, "y": 335}, {"x": 395, "y": 180}]})
-        elif step == 4:
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 180, "y": 455}, {"x": 230, "y": 440}, {"x": 280, "y": 455}, {"x": 330, "y": 440}, {"x": 380, "y": 455}, {"x": 430, "y": 440}, {"x": 480, "y": 455}, {"x": 530, "y": 440}, {"x": 580, "y": 455}, {"x": 630, "y": 440}]})
-
-    elif dtype == "chart":
-        if step == 0:
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 220, "y": 140}, {"x": 580, "y": 140}, {"x": 580, "y": 420}, {"x": 220, "y": 420}, {"x": 220, "y": 140}]})
-        elif step == 1:
-            nodes = [{"x": 280, "y": 220}, {"x": 280, "y": 320}, {"x": 400, "y": 190}, {"x": 400, "y": 280}, {"x": 400, "y": 370}, {"x": 520, "y": 240}, {"x": 520, "y": 340}]
-            for pt in nodes:
-                strokes.append({"color": "#35A7FF", "width": 8, "points": [{"x": pt["x"], "y": pt["y"]}, {"x": pt["x"] + 2, "y": pt["y"]}]})
-        elif step == 2:
-            strokes.append({"color": "#FFE600", "width": 2, "points": [{"x": 280, "y": 220}, {"x": 400, "y": 190}, {"x": 520, "y": 240}]})
-            strokes.append({"color": "#FFE600", "width": 2, "points": [{"x": 280, "y": 320}, {"x": 400, "y": 370}, {"x": 520, "y": 340}]})
-        elif step == 3:
-            strokes.append({"color": "#FF5964", "width": 6, "points": [{"x": 260, "y": 400}, {"x": 260, "y": 350}]})
-            strokes.append({"color": "#FFE600", "width": 6, "points": [{"x": 300, "y": 400}, {"x": 300, "y": 310}]})
-            strokes.append({"color": "#38B000", "width": 6, "points": [{"x": 340, "y": 400}, {"x": 340, "y": 260}]})
-        elif step == 4:
-            strokes.append({"color": "#FFE600", "width": 5, "points": [{"x": 400, "y": 100}, {"x": 400, "y": 70}]})
-
-    else:
-        if step == 0:
-            pts = []
-            for i in range(37):
-                a = (i * 10 * math.pi) / 180
-                pts.append({"x": 400 + 110 * math.cos(a), "y": 300 + 110 * math.sin(a)})
-            strokes.append({"color": "#1E1E24", "width": 5, "points": pts})
-        elif step == 1:
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 360, "y": 265}, {"x": 365, "y": 265}]})
-            strokes.append({"color": "#1E1E24", "width": 6, "points": [{"x": 440, "y": 265}, {"x": 445, "y": 265}]})
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 310, "y": 210}, {"x": 300, "y": 130}, {"x": 360, "y": 190}]})
-            strokes.append({"color": "#1E1E24", "width": 5, "points": [{"x": 490, "y": 210}, {"x": 500, "y": 130}, {"x": 440, "y": 190}]})
-        elif step == 2:
-            strokes.append({"color": "#FF5964", "width": 6, "points": [{"x": 395, "y": 295}, {"x": 405, "y": 295}, {"x": 400, "y": 305}, {"x": 395, "y": 295}]})
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 400, "y": 305}, {"x": 385, "y": 325}, {"x": 370, "y": 320}]})
-            strokes.append({"color": "#1E1E24", "width": 4, "points": [{"x": 400, "y": 305}, {"x": 415, "y": 325}, {"x": 430, "y": 320}]})
-        elif step == 3:
-            strokes.append({"color": "#1E1E24", "width": 3, "points": [{"x": 350, "y": 300}, {"x": 270, "y": 290}]})
-            strokes.append({"color": "#1E1E24", "width": 3, "points": [{"x": 350, "y": 310}, {"x": 270, "y": 320}]})
-            strokes.append({"color": "#1E1E24", "width": 3, "points": [{"x": 450, "y": 300}, {"x": 530, "y": 290}]})
-            strokes.append({"color": "#1E1E24", "width": 3, "points": [{"x": 450, "y": 310}, {"x": 530, "y": 320}]})
-        elif step == 4:
-            strokes.append({"color": "#FFE600", "width": 4, "points": [{"x": 220, "y": 140}, {"x": 240, "y": 140}, {"x": 230, "y": 125}, {"x": 230, "y": 155}]})
-            strokes.append({"color": "#35A7FF", "width": 4, "points": [{"x": 570, "y": 140}, {"x": 590, "y": 140}, {"x": 580, "y": 125}, {"x": 580, "y": 155}]})
-
-    return strokes
-
 class GameRoom:
     def __init__(self, code: str, host_id: str, default_pdf: str = "sample_slides/ml_lecture_slides.pdf"):
         self.code = code.upper()
@@ -389,11 +151,6 @@ class GameRoom:
         # Player rotation order
         self.player_order: List[str] = []
         self.drawer_index: int = 0
-
-        # AI Bot Solo Play
-        self.has_bot: bool = False
-        self.bot_doodle_step: int = 0
-        self.bot_guessed_round: bool = False
 
     def add_player(self, player_id: str, name: str, avatar: str, ws: WebSocket) -> Player:
         is_host = (len(self.players) == 0) or (player_id == self.host_id)
@@ -486,37 +243,6 @@ class GameRoom:
             "pdf_name": self.slide_manager.pdf_name
         })
 
-    async def add_bot(self):
-        self.has_bot = True
-        bot_player = Player(
-            id="bot_ai",
-            name="🤖 Professor Paws",
-            avatar="cat",
-            score=0,
-            is_host=False,
-            connected=True
-        )
-        self.players["bot_ai"] = bot_player
-        if "bot_ai" not in self.player_order:
-            self.player_order.append("bot_ai")
-        await self.broadcast({
-            "type": "player_joined",
-            "player": bot_player.model_dump(),
-            "players": [p.model_dump() for p in self.players.values()]
-        })
-
-    async def remove_bot(self):
-        self.has_bot = False
-        if "bot_ai" in self.players:
-            del self.players["bot_ai"]
-        if "bot_ai" in self.player_order:
-            self.player_order.remove("bot_ai")
-        await self.broadcast({
-            "type": "player_left",
-            "player_id": "bot_ai",
-            "players": [p.model_dump() for p in self.players.values()]
-        })
-
     def word_lengths(self):
         return [len(part) for part in re.findall(r"[A-Za-z0-9]+", self.current_word)]
 
@@ -532,8 +258,6 @@ class GameRoom:
         self.time_remaining = 0
         self.strokes = []
         self.current_round = 1
-        self.bot_doodle_step = 0
-        self.bot_guessed_round = False
         for player in self.players.values():
             player.is_drawing = False
             player.has_guessed = False
@@ -639,8 +363,6 @@ class GameRoom:
         self.current_drawing_snapshot = None
         self.revealed_indices = set()
         self.hint_broadcasted = False
-        self.bot_doodle_step = 0
-        self.bot_guessed_round = False
         self.state = "WORD_SELECTION"
 
         await self.begin_selection()
@@ -674,18 +396,6 @@ class GameRoom:
 
     async def word_selection_timer(self):
         try:
-            if self.drawer_id == "bot_ai":
-                await asyncio.sleep(1)
-                if self.state == "WORD_SELECTION":
-                    slide = self.active_slide()
-                    word = "Cat"
-                    if self.mode == "classic" and self.word_options:
-                        word = random.choice(self.word_options)
-                    elif self.mode == "study" and slide and slide.word_boxes:
-                        word = random.choice(slide.word_boxes).word
-                    await self.set_secret_word("bot_ai", word)
-                    return
-
             while self.time_remaining > 0 and self.state == "WORD_SELECTION":
                 await asyncio.sleep(1)
                 self.time_remaining -= 1
@@ -717,8 +427,6 @@ class GameRoom:
         self.time_remaining = self.draw_time
         self.revealed_indices = set()
         self.hint_broadcasted = False
-        self.bot_doodle_step = 0
-        self.bot_guessed_round = False
 
         slide = self.active_slide()
 
@@ -803,38 +511,10 @@ class GameRoom:
                         "hint": hint_text
                     })
 
-                # AI Bot behavior during drawing
-                if self.has_bot and "bot_ai" in self.players:
-                    if self.drawer_id == "bot_ai":
-                        elapsed = self.draw_time - self.time_remaining
-                        if elapsed > 0 and elapsed % 3 == 0 and self.bot_doodle_step < 5:
-                            step_strokes = get_bot_doodle_strokes(self.current_word, self.bot_doodle_step)
-                            for s_data in step_strokes:
-                                stroke = Stroke(**s_data)
-                                self.strokes.append(stroke)
-                                await self.broadcast({"type": "stroke_drawn", "stroke": s_data})
-                            self.bot_doodle_step += 1
-                    else:
-                        bot_player = self.players.get("bot_ai")
-                        if bot_player and not bot_player.has_guessed and not self.bot_guessed_round:
-                            guess_time = int(self.draw_time * 0.45)
-                            nudge_time = int(self.draw_time * 0.70)
-                            if self.time_remaining == nudge_time:
-                                await self.broadcast({
-                                    "type": "chat_message",
-                                    "message": {
-                                        "sender_id": "bot_ai",
-                                        "sender_name": "🤖 Professor Paws",
-                                        "avatar": "cat",
-                                        "text": "Looking at your drawing... let me think! 🐾",
-                                        "is_system": False,
-                                        "is_correct": False
-                                    }
-                                })
-                            elif self.time_remaining <= guess_time:
-                                self.bot_guessed_round = True
-                                await self.handle_guess("bot_ai", self.current_word)
-                                return
+            if self.state == "DRAWING":
+                await self.end_round(reason="Time's Up!")
+        except asyncio.CancelledError:
+            pass
 
             if self.state == "DRAWING":
                 await self.end_round(reason="Time's Up!")

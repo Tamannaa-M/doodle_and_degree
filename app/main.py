@@ -138,14 +138,6 @@ async def websocket_endpoint(websocket: WebSocket, code: str, player_id: str):
                 total_rounds = data.get("total_rounds", 3)
                 await room.update_settings(player_id, draw_time, total_rounds, data.get("mode", room.mode), data.get("classic_category", room.classic_category))
 
-            elif msg_type == "add_bot":
-                if player_id == room.host_id and room.state == "LOBBY":
-                    await room.add_bot()
-
-            elif msg_type == "remove_bot":
-                if player_id == room.host_id and room.state == "LOBBY":
-                    await room.remove_bot()
-
             elif msg_type == "return_to_lobby":
                 await room.return_to_lobby(player_id)
 
